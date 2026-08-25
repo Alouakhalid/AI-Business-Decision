@@ -77,7 +77,7 @@ async function ingestUrl() {
     const data = await res.json();
     if (res.ok) { document.getElementById('ideaInput').value = data.extracted_idea; }
     else { alert(data.detail || 'Failed to extract URL'); }
-  } catch(e) { alert('Error scraping URL'); }
+  } catch (e) { alert('Error scraping URL'); }
   btn.innerText = 'Scrape & Extract';
 }
 
@@ -94,15 +94,15 @@ async function startAnalysis() {
   const idea = document.getElementById('ideaInput').value.trim();
   if (!idea) return alert("Please enter a venture concept!");
   const budget = parseFloat(document.getElementById('budgetInput').value) || 100000;
-  
+
   const btn = document.getElementById('analyzeBtn');
   const consoleEl = document.getElementById('deliberationConsole');
   const logStream = document.getElementById('logStream');
   const resultsEl = document.getElementById('dashboardResults');
-  
+
   btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Running 6-Agent Swarm...`;
   consoleEl.style.display = 'block'; resultsEl.style.display = 'none'; logStream.innerHTML = '';
-  
+
   let stepIdx = 0;
   const sim = [
     { agent: 'CEO', action: 'Swarm Orchestration', thought: 'Initializing 6-agent boardroom swarm...' },
@@ -114,7 +114,7 @@ async function startAnalysis() {
   ];
 
   const interval = setInterval(() => {
-    if(stepIdx < sim.length) { appendLog(sim[stepIdx]); stepIdx++; }
+    if (stepIdx < sim.length) { appendLog(sim[stepIdx]); stepIdx++; }
   }, 1200);
 
   try {
@@ -123,12 +123,9 @@ async function startAnalysis() {
       body: JSON.stringify({ idea_description: idea, initial_budget_usd: budget })
     });
     clearInterval(interval);
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.detail || "Analysis failed due to server response.");
-    }
+    if (!response.ok) throw new Error("Analysis failed");
     currentReport = await response.json();
-    
+
     // Append actual backend agent logs if present
     if (currentReport.agent_logs && currentReport.agent_logs.length > 0) {
       currentReport.agent_logs.forEach(l => appendLog(l));
@@ -167,7 +164,7 @@ function renderResults(report) {
   document.getElementById('viabilityScore').innerText = report.viability_score;
 
   // Node Graph
-  if(report.tech_architecture && report.tech_architecture.architecture_nodes) {
+  if (report.tech_architecture && report.tech_architecture.architecture_nodes) {
     renderNodeGraph(report.tech_architecture.architecture_nodes, report.tech_architecture.architecture_edges);
   }
 
@@ -209,59 +206,32 @@ function getNodeIcon(type) {
   return '<i class="fa-solid fa-cubes"></i>';
 }
 
-// --- FULLY INTERACTIVE CTO DRAGGABLE & INSPECTABLE NODE GRAPH ---
-let globalGraphNodes = [];
-let globalGraphEdges = [];
-let nodePositions = {};
-let activeDraggedNode = null;
-let dragOffset = { x: 0, y: 0 };
-
-function inspectNode(nodeId) {
-  const node = globalGraphNodes.find(n => n.id === nodeId);
-  if (!node) return;
-
-  const modal = document.getElementById('nodeInspectorModal');
-  document.getElementById('inspectorTitle').innerText = node.label || 'Component Node';
-  document.getElementById('inspectorIcon').innerHTML = getNodeIcon(node.type);
-  document.getElementById('inspectorBadge').innerText = (node.type || 'service').toUpperCase();
-  document.getElementById('inspectorDescription').innerText = node.description || 'Core service orchestrating backend business logic and agent state management.';
-  document.getElementById('inspectorCost').innerText = node.cost_estimate || '$50/mo';
-  
-  // Random dynamic latency simulation for realism
-  const latencies = { frontend: '~12ms (Edge CDN)', backend: '~24ms (Region US-East)', database: '~8ms (VPC Peer)', ai_model: '~180ms (Groq LPU)' };
-  const typeKey = (node.type || '').toLowerCase();
-  let lat = '~20ms';
-  if (typeKey.includes('frontend')) lat = latencies.frontend;
-  else if (typeKey.includes('backend')) lat = latencies.backend;
-  else if (typeKey.includes('database') || typeKey.includes('storage')) lat = latencies.database;
-  else if (typeKey.includes('ai') || typeKey.includes('model')) lat = latencies.ai_model;
-  
-  document.getElementById('inspectorLatency').innerText = lat;
-  modal.style.display = 'flex';
-}
-
-function closeNodeInspectorModal() {
-  const modal = document.getElementById('nodeInspectorModal');
-  if (modal) modal.style.display = 'none';
-}
-
+// --- ENHANCED CTO NODE GRAPH RENDERER ---
 function renderNodeGraph(nodes, edges) {
-  globalGraphNodes = nodes || [];
-  globalGraphEdges = edges || [];
-
   const container = document.getElementById('nodeGraphContainer');
+  const svg = document.getElementById('nodeEdgesSvg');
+
+  Array.from(container.children).forEach(c => { if (c.id !== 'nodeEdgesSvg') c.remove(); });
+  svg.innerHTML = `
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(253, 224, 71, 0.8)"/>
+      </marker>
+    </defs>
+  `;
+
   const width = container.clientWidth || 900;
   const height = container.clientHeight || 450;
 
   const tierMap = { frontend: [], backend: [], data_ai: [] };
-  globalGraphNodes.forEach(n => {
+  nodes.forEach(n => {
     const t = (n.type || '').toLowerCase();
     if (t.includes('frontend')) tierMap.frontend.push(n);
     else if (t.includes('backend') || t.includes('api') || t.includes('gateway')) tierMap.backend.push(n);
     else tierMap.data_ai.push(n);
   });
 
-  nodePositions = {};
+  const positions = {};
 
   const layoutTier = (nodeList, columnPct) => {
     const x = width * columnPct;
@@ -269,142 +239,41 @@ function renderNodeGraph(nodes, edges) {
     nodeList.forEach((n, idx) => {
       const step = height / (total + 1);
       const y = step * (idx + 1);
-      nodePositions[n.id] = { x, y };
+      positions[n.id] = { x, y };
     });
   };
 
-  layoutTier(tierMap.frontend.length ? tierMap.frontend : [globalGraphNodes[0]], 0.18);
-  layoutTier(tierMap.backend.length ? tierMap.backend : [globalGraphNodes[1] || globalGraphNodes[0]], 0.50);
-  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : globalGraphNodes.slice(2), 0.82);
+  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.18);
+  layoutTier(tierMap.backend.length ? tierMap.backend : [nodes[1] || nodes[0]], 0.50);
+  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.82);
 
-  globalGraphNodes.forEach((n, i) => {
-    if (!nodePositions[n.id]) {
-      nodePositions[n.id] = { x: width * (0.2 + (i * 0.25) % 0.6), y: height * 0.5 };
+  nodes.forEach((n, i) => {
+    if (!positions[n.id]) {
+      positions[n.id] = { x: width * (0.2 + (i * 0.25) % 0.6), y: height * 0.5 };
     }
   });
 
-  redrawNodeGraphDOM();
-}
-
-function redrawNodeGraphDOM() {
-  const container = document.getElementById('nodeGraphContainer');
-  const svg = document.getElementById('nodeEdgesSvg');
-  if (!container || !svg) return;
-
-  Array.from(container.children).forEach(c => { if (c.id !== 'nodeEdgesSvg') c.remove(); });
-
-  svg.innerHTML = `
-    <defs>
-      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(253, 224, 71, 0.8)"/>
-      </marker>
-    </defs>
-  `;
-
-  // Render SVG Lines first
-  globalGraphEdges.forEach(e => {
-    const s = nodePositions[e.source];
-    const t = nodePositions[e.target];
-    if (s && t) {
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', s.x); line.setAttribute('y1', s.y);
-      line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
-      line.setAttribute('class', 'node-svg-line');
-      line.setAttribute('marker-end', 'url(#arrow)');
-      svg.appendChild(line);
-
-      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('x', (s.x + t.x) / 2); text.setAttribute('y', (s.y + t.y) / 2 - 8);
-      text.setAttribute('fill', 'var(--shout-yellow)'); text.setAttribute('font-size', '10px');
-      text.setAttribute('font-weight', 'bold');
-      text.setAttribute('text-anchor', 'middle');
-      text.textContent = e.label;
-      svg.appendChild(text);
-    }
-  });
-
-  // Render HTML Nodes
-  globalGraphNodes.forEach((n) => {
-    const pos = nodePositions[n.id] || { x: 100, y: 100 };
+  nodes.forEach((n) => {
+    const pos = positions[n.id];
     const icon = getNodeIcon(n.type);
     const typeClass = `node-type-${(n.type || 'backend').toLowerCase()}`;
 
     const div = document.createElement('div');
     div.className = `tech-node ${typeClass}`;
-    div.id = `node-el-${n.id}`;
     div.style.left = `${pos.x - 70}px`;
     div.style.top = `${pos.y - 35}px`;
-    div.title = "Click to inspect details, drag to move node";
-
+    div.title = `${n.label}: ${n.description || n.type}`;
     div.innerHTML = `
       <div class="tech-node-type">${icon} ${n.type || 'service'}</div>
-      <div style="font-weight:800; color:#FFF; font-size:0.88rem; line-height:1.2;">${n.label}</div>
+      <div style="font-weight:800; color:#FFF; font-size:0.9rem;">${n.label}</div>
       <div class="tech-node-cost">${n.cost_estimate || '$50/mo'}</div>
     `;
-
-    // Click handler for modal inspect
-    div.addEventListener('click', (evt) => {
-      if (!div.dataset.dragged) {
-        inspectNode(n.id);
-      }
-      div.dataset.dragged = "";
-    });
-
-    // Mouse Drag handlers
-    div.addEventListener('mousedown', (e) => {
-      activeDraggedNode = n.id;
-      div.dataset.dragged = "";
-      const rect = container.getBoundingClientRect();
-      dragOffset.x = (e.clientX - rect.left) - pos.x;
-      dragOffset.y = (e.clientY - rect.top) - pos.y;
-      e.stopPropagation();
-    });
-
     container.appendChild(div);
   });
-}
 
-// Global Drag Mousemove Listener
-document.addEventListener('mousemove', (e) => {
-  if (!activeDraggedNode) return;
-  const container = document.getElementById('nodeGraphContainer');
-  if (!container) return;
-  const rect = container.getBoundingClientRect();
-
-  const newX = Math.max(70, Math.min(rect.width - 70, (e.clientX - rect.left) - dragOffset.x));
-  const newY = Math.max(35, Math.min(rect.height - 35, (e.clientY - rect.top) - dragOffset.y));
-
-  nodePositions[activeDraggedNode] = { x: newX, y: newY };
-  
-  const div = document.getElementById(`node-el-${activeDraggedNode}`);
-  if (div) {
-    div.style.left = `${newX - 70}px`;
-    div.style.top = `${newY - 35}px`;
-    div.dataset.dragged = "true";
-  }
-
-  // Update SVG Lines dynamically
-  redrawNodeGraphLines();
-});
-
-document.addEventListener('mouseup', () => {
-  activeDraggedNode = null;
-});
-
-function redrawNodeGraphLines() {
-  const svg = document.getElementById('nodeEdgesSvg');
-  if (!svg) return;
-  svg.innerHTML = `
-    <defs>
-      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(253, 224, 71, 0.8)"/>
-      </marker>
-    </defs>
-  `;
-
-  globalGraphEdges.forEach(e => {
-    const s = nodePositions[e.source];
-    const t = nodePositions[e.target];
+  edges.forEach(e => {
+    const s = positions[e.source];
+    const t = positions[e.target];
     if (s && t) {
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', s.x); line.setAttribute('y1', s.y);
@@ -424,55 +293,16 @@ function redrawNodeGraphLines() {
   });
 }
 
-function filterArchitectureNodes(category, btnEl) {
-  document.querySelectorAll('.node-filter-btn').forEach(b => b.classList.remove('active'));
-  if (btnEl) btnEl.classList.add('active');
-
-  globalGraphNodes.forEach(n => {
-    const div = document.getElementById(`node-el-${n.id}`);
-    if (!div) return;
-    const t = (n.type || '').toLowerCase();
-    
-    if (category === 'all') {
-      div.style.opacity = '1';
-      div.style.filter = 'none';
-    } else if (category === 'frontend' && t.includes('frontend')) {
-      div.style.opacity = '1'; div.style.filter = 'none';
-    } else if (category === 'backend' && (t.includes('backend') || t.includes('api'))) {
-      div.style.opacity = '1'; div.style.filter = 'none';
-    } else if (category === 'data_ai' && (t.includes('database') || t.includes('storage') || t.includes('ai') || t.includes('model') || t.includes('vector'))) {
-      div.style.opacity = '1'; div.style.filter = 'none';
-    } else {
-      div.style.opacity = '0.25';
-      div.style.filter = 'grayscale(100%)';
-    }
-  });
-}
-
-function simulateDataflowPing() {
-  const nodes = document.querySelectorAll('.tech-node');
-  nodes.forEach((n, idx) => {
-    setTimeout(() => {
-      n.classList.add('pinging');
-      setTimeout(() => n.classList.remove('pinging'), 1200);
-    }, idx * 150);
-  });
-}
-
-function resetNodeLayout() {
-  renderNodeGraph(globalGraphNodes, globalGraphEdges);
-}
-
 // --- TERMINAL AGENT CHAT (STREAMING & NO ASTERISKS) ---
 async function handleTerminalKey(e) {
-  if(e.key === 'Enter') {
+  if (e.key === 'Enter') {
     const input = document.getElementById('terminalInput');
     const q = input.value.trim();
-    if(!q) return;
+    if (!q) return;
     const agent = document.getElementById('terminalAgentSelect').value;
     input.value = '';
     input.disabled = true;
-    
+
     const out = document.getElementById('terminalOutput');
     const userLine = document.createElement('div');
     userLine.style.color = '#FFFFFF';
@@ -480,14 +310,14 @@ async function handleTerminalKey(e) {
     userLine.innerText = `user@decisionos:~$ @${agent.toUpperCase()} ${q}`;
     out.appendChild(userLine);
     out.scrollTop = out.scrollHeight;
-    
+
     try {
       const res = await fetch('/api/agent-chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agent_id: agent, query: q })
       });
       const data = await res.json();
-      
+
       // Clean all markdown asterisks (*, **), hashes (#), and backticks (`)
       let cleanText = (data.response || '')
         .replace(/\*\*/g, '')
@@ -502,10 +332,10 @@ async function handleTerminalKey(e) {
       responseEl.style.lineHeight = '1.5';
       responseEl.innerHTML = `<strong style="color: #FFF;">[${agent.toUpperCase()}]</strong> `;
       out.appendChild(responseEl);
-      
+
       const words = cleanText.split(/\s+/);
       let wordIdx = 0;
-      
+
       const streamTimer = setInterval(() => {
         if (wordIdx < words.length) {
           responseEl.innerHTML += words[wordIdx] + ' ';
@@ -517,8 +347,8 @@ async function handleTerminalKey(e) {
           input.focus();
         }
       }, 30); // 30ms per word typewriter streaming speed
-      
-    } catch(err) {
+
+    } catch (err) {
       const errEl = document.createElement('div');
       errEl.style.color = 'var(--accent-rose)';
       errEl.innerText = `Error reaching @${agent.toUpperCase()}`;
@@ -543,23 +373,25 @@ function updateTableProjections() {
   document.getElementById('tblProfitY1').innerText = `$${p1.toLocaleString()}`;
   document.getElementById('tblProfitY2').innerText = `$${p2.toLocaleString()}`;
   document.getElementById('tblProfitY3').innerText = `$${p3.toLocaleString()}`;
-  
+
   if (financialChartInstance) {
     financialChartInstance.data.datasets[0].data = [r1, r2, r3];
     financialChartInstance.data.datasets[1].data = [o1, o2, o3];
     financialChartInstance.data.datasets[2].data = [p1, p2, p3];
     financialChartInstance.update();
   } else {
-      const ctx = document.getElementById('financialChart').getContext('2d');
-      financialChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: { labels: ['Y1','Y2','Y3'], datasets: [
-          { label: 'Rev', data: [r1,r2,r3], backgroundColor: '#FDE047' },
-          { label: 'Opex', data: [o1,o2,o3], backgroundColor: '#F43F5E' },
-          { label: 'Profit', type:'line', data: [p1,p2,p3], borderColor: '#10B981', fill:false }
-        ]},
-        options: { responsive: true, maintainAspectRatio: false }
-      });
+    const ctx = document.getElementById('financialChart').getContext('2d');
+    financialChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Y1', 'Y2', 'Y3'], datasets: [
+          { label: 'Rev', data: [r1, r2, r3], backgroundColor: '#FDE047' },
+          { label: 'Opex', data: [o1, o2, o3], backgroundColor: '#F43F5E' },
+          { label: 'Profit', type: 'line', data: [p1, p2, p3], borderColor: '#10B981', fill: false }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
   }
 }
 function exportFinancialCSV() {
@@ -569,7 +401,7 @@ function exportFinancialCSV() {
   const o1 = parseFloat(document.getElementById('tblOpexY1').value) || 0;
   const o2 = parseFloat(document.getElementById('tblOpexY2').value) || 0;
   const o3 = parseFloat(document.getElementById('tblOpexY3').value) || 0;
-  
+
   const p1 = r1 - o1; const p2 = r2 - o2; const p3 = r3 - o3;
 
   const csvRows = [
@@ -623,7 +455,245 @@ async function submitRedTeamDefense() {
     const isAccepted = data.verdict === 'ACCEPTED' || (data.defense_score && data.defense_score >= 70);
     verdictEl.innerText = data.verdict || (isAccepted ? "ACCEPTED" : "REJECTED");
     verdictEl.style.color = isAccepted ? 'var(--accent-emerald)' : 'var(--accent-rose)';
-    
+
+    const scoreNum = Math.round(data.defense_score || 85);
+    scoreBadgeEl.innerText = `${scoreNum}/100`;
+    scoreBadgeEl.style.background = isAccepted ? 'var(--accent-emerald)' : 'var(--accent-rose)';
+    scoreBadgeEl.style.color = '#FFFFFF';
+
+    let html = `<div style="margin-bottom:0.75rem;">${data.red_team_critique || 'The auditor evaluated your defense.'}</div>`;
+    if (data.actionable_enhancements && data.actionable_enhancements.length > 0) {
+      html += `<div style="font-weight:bold; color:var(--shout-yellow); margin-top:0.5rem;">Actionable Enhancements:</div><ul style="margin-left:1.25rem; margin-top:0.25rem; color:var(--text-muted-dark);">`;
+      data.actionable_enhancements.forEach(e => html += `<li>${e}</li>`);
+      html += `</ul>`;
+    }
+    critiqueEl.innerHTML = html;
+    resultBox.scrollIntoView({ behavior: 'smooth' });
+
+  } catch (err) {
+    alert(`Red Team Audit Error: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-gavel"></i> Submit Counter-Defense`;
+  }
+}
+// --- INTERACTIVE PITCH DECK SLIDER ---
+let currentPitchSlides = [];
+let currentSlideIndex = 0;
+
+function openPitchModal() {
+  if (currentReport && currentReport.pitch_slides && currentReport.pitch_slides.length > 0) {
+    currentPitchSlides = currentReport.pitch_slides;
+  } else {
+    currentPitchSlides = [
+      { slide_number: 1, title: "Problem & Market Opportunity", bullet_points: ["Unmet enterprise demand for automated AI decisions", "Legacy consulting models are slow and costly ($50k+/project)"], speaker_notes: "Hook investors with high market inefficiency." },
+      { slide_number: 2, title: "The Solution & AI Tech Architecture", bullet_points: ["Autonomous 6-Agent C-Suite Swarm (CSO, CFO, CTO, CMO, RedTeam, CEO)", "Fast Groq LPU inference with Cohere semantic vector RAG"], speaker_notes: "Highlight technical defensibility and speed." },
+      { slide_number: 3, title: "Business Model & Monetization", bullet_points: ["B2B SaaS Subscription Tiers ($49/mo Starter, $199/mo Pro, Enterprise)", "High Gross Margin (78%) with scalable usage billing"], speaker_notes: "Detail predictable SaaS revenue mechanics." },
+      { slide_number: 4, title: "3-Year Financial Trajectory", bullet_points: ["Year 1 ARR: $250k | Year 3 ARR: $4.5M", "Unit Economics: 6.85x LTV/CAC Ratio with 5-month payback cycle"], speaker_notes: "Show rapid path to capital efficiency." },
+      { slide_number: 5, title: "Go-To-Market Growth Engine", bullet_points: ["Product-Led Growth (PLG) self-serve viral onboarding loops", "Direct outbound enterprise sales motion for high ACV accounts"], speaker_notes: "Explain customer acquisition velocity." },
+      { slide_number: 6, title: "Adversarial Audit & Defensive Moat", bullet_points: ["Stress-tested against competitive copycat threats by Red Team Auditor", "High customer retention lock-in through custom agent fine-tuning"], speaker_notes: "Conclude with long-term defensibility." }
+    ];
+  }
+
+  currentSlideIndex = 0;
+  renderCurrentSlide();
+  document.getElementById('pitchModal').style.display = 'flex';
+}
+
+function closePitchModal() {
+  document.getElementById('pitchModal').style.display = 'none';
+}
+
+function renderCurrentSlide() {
+  if (!currentPitchSlides || currentPitchSlides.length === 0) return;
+  const slide = currentPitchSlides[currentSlideIndex];
+
+  document.getElementById('slideNumber').innerText = `SLIDE ${currentSlideIndex + 1} OF ${currentPitchSlides.length}`;
+  document.getElementById('slideTitle').innerText = slide.title || `Slide ${currentSlideIndex + 1}`;
+
+  const bulletsContainer = document.getElementById('slideBullets');
+  if (bulletsContainer) {
+    bulletsContainer.innerHTML = '';
+    const points = slide.bullet_points || [];
+    points.forEach(pt => {
+      const li = document.createElement('li');
+      li.className = 'bmc-bullet-item';
+      li.innerText = pt;
+      bulletsContainer.appendChild(li);
+    });
+
+    if (slide.speaker_notes) {
+      const notesDiv = document.createElement('div');
+      notesDiv.style.marginTop = '1.5rem';
+      notesDiv.style.padding = '0.75rem 1rem';
+      notesDiv.style.background = 'rgba(253, 224, 71, 0.1)';
+      notesDiv.style.borderLeft = '3px solid var(--shout-yellow)';
+      notesDiv.style.borderRadius = '6px';
+      notesDiv.style.fontSize = '0.85rem';
+      notesDiv.style.color = '#EEE';
+      notesDiv.innerHTML = `<strong style="color:var(--shout-yellow); display:block; margin-bottom:0.2rem;">🎙️ Founder Speaker Notes:</strong> ${slide.speaker_notes}`;
+      bulletsContainer.appendChild(notesDiv);
+    }
+  }
+}
+
+function nextSlide() {
+  if (!currentPitchSlides || currentPitchSlides.length === 0) return;
+  currentSlideIndex = (currentSlideIndex + 1) % currentPitchSlides.length;
+  renderCurrentSlide();
+}
+
+function prevSlide() {
+  if (!currentPitchSlides || currentPitchSlides.length === 0) return;
+  currentSlideIndex = (currentSlideIndex - 1 + currentPitchSlides.length) % currentPitchSlides.length;
+  renderCurrentSlide();
+}
+
+try {
+  const res = await fetch('/api/agent-chat', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ agent_id: agent, query: q })
+  });
+  const data = await res.json();
+
+  // Clean all markdown asterisks (*, **), hashes (#), and backticks (`)
+  let cleanText = (data.response || '')
+    .replace(/\*\*/g, '')
+    .replace(/\*/g, '')
+    .replace(/#/g, '')
+    .replace(/`/g, '')
+    .trim();
+
+  const responseEl = document.createElement('div');
+  responseEl.style.color = 'var(--shout-yellow)';
+  responseEl.style.marginBottom = '1rem';
+  responseEl.style.lineHeight = '1.5';
+  responseEl.innerHTML = `<strong style="color: #FFF;">[${agent.toUpperCase()}]</strong> `;
+  out.appendChild(responseEl);
+
+  const words = cleanText.split(/\s+/);
+  let wordIdx = 0;
+
+  const streamTimer = setInterval(() => {
+    if (wordIdx < words.length) {
+      responseEl.innerHTML += words[wordIdx] + ' ';
+      out.scrollTop = out.scrollHeight;
+      wordIdx++;
+    } else {
+      clearInterval(streamTimer);
+      input.disabled = false;
+      input.focus();
+    }
+  }, 30); // 30ms per word typewriter streaming speed
+
+} catch (err) {
+  const errEl = document.createElement('div');
+  errEl.style.color = 'var(--accent-rose)';
+  errEl.innerText = `Error reaching @${agent.toUpperCase()}`;
+  out.appendChild(errEl);
+  out.scrollTop = out.scrollHeight;
+  input.disabled = false;
+  input.focus();
+}
+  }
+}
+
+// --- SPREADSHEET TABLE EDITING & CSV EXPORT ---
+function updateTableProjections() {
+  const r1 = parseFloat(document.getElementById('tblRevY1').value) || 0;
+  const r2 = parseFloat(document.getElementById('tblRevY2').value) || 0;
+  const r3 = parseFloat(document.getElementById('tblRevY3').value) || 0;
+  const o1 = parseFloat(document.getElementById('tblOpexY1').value) || 0;
+  const o2 = parseFloat(document.getElementById('tblOpexY2').value) || 0;
+  const o3 = parseFloat(document.getElementById('tblOpexY3').value) || 0;
+  const p1 = r1 - o1; const p2 = r2 - o2; const p3 = r3 - o3;
+
+  document.getElementById('tblProfitY1').innerText = `$${p1.toLocaleString()}`;
+  document.getElementById('tblProfitY2').innerText = `$${p2.toLocaleString()}`;
+  document.getElementById('tblProfitY3').innerText = `$${p3.toLocaleString()}`;
+
+  if (financialChartInstance) {
+    financialChartInstance.data.datasets[0].data = [r1, r2, r3];
+    financialChartInstance.data.datasets[1].data = [o1, o2, o3];
+    financialChartInstance.data.datasets[2].data = [p1, p2, p3];
+    financialChartInstance.update();
+  } else {
+    const ctx = document.getElementById('financialChart').getContext('2d');
+    financialChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Y1', 'Y2', 'Y3'], datasets: [
+          { label: 'Rev', data: [r1, r2, r3], backgroundColor: '#FDE047' },
+          { label: 'Opex', data: [o1, o2, o3], backgroundColor: '#F43F5E' },
+          { label: 'Profit', type: 'line', data: [p1, p2, p3], borderColor: '#10B981', fill: false }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+}
+function exportFinancialCSV() {
+  const r1 = parseFloat(document.getElementById('tblRevY1').value) || 0;
+  const r2 = parseFloat(document.getElementById('tblRevY2').value) || 0;
+  const r3 = parseFloat(document.getElementById('tblRevY3').value) || 0;
+  const o1 = parseFloat(document.getElementById('tblOpexY1').value) || 0;
+  const o2 = parseFloat(document.getElementById('tblOpexY2').value) || 0;
+  const o3 = parseFloat(document.getElementById('tblOpexY3').value) || 0;
+
+  const p1 = r1 - o1; const p2 = r2 - o2; const p3 = r3 - o3;
+
+  const csvRows = [
+    ["Financial Metric", "Year 1 ($)", "Year 2 ($)", "Year 3 ($)"],
+    ["Annual Revenue", r1, r2, r3],
+    ["Operating Expenses (OPEX)", o1, o2, o3],
+    ["Net Profit / (Loss)", p1, p2, p3]
+  ];
+
+  const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(e => e.join(",")).join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "decisionos_financial_projections.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+async function submitRedTeamDefense() {
+  const vulnSelect = document.getElementById('challengeVulnSelect');
+  const vulnerability = vulnSelect ? vulnSelect.value : '';
+  const defenseInput = document.getElementById('userDefenseInput');
+  const userDefense = defenseInput ? defenseInput.value.trim() : '';
+
+  if (!userDefense) {
+    alert("Please enter your strategic counter-defense!");
+    return;
+  }
+
+  const btn = document.getElementById('submitDefenseBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Auditing Counter-Defense...`;
+
+  try {
+    const res = await fetch('/api/redteam/challenge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vulnerability: vulnerability || "High CAC Erosion & Competitive Attack", user_defense: userDefense })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Audit submission failed.");
+
+    const resultBox = document.getElementById('defenseResultBox');
+    const verdictEl = document.getElementById('defenseVerdict');
+    const scoreBadgeEl = document.getElementById('defenseScoreBadge');
+    const critiqueEl = document.getElementById('defenseCritique');
+
+    resultBox.style.display = 'block';
+    const isAccepted = data.verdict === 'ACCEPTED' || (data.defense_score && data.defense_score >= 70);
+    verdictEl.innerText = data.verdict || (isAccepted ? "ACCEPTED" : "REJECTED");
+    verdictEl.style.color = isAccepted ? 'var(--accent-emerald)' : 'var(--accent-rose)';
+
     const scoreNum = Math.round(data.defense_score || 85);
     scoreBadgeEl.innerText = `${scoreNum}/100`;
     scoreBadgeEl.style.background = isAccepted ? 'var(--accent-emerald)' : 'var(--accent-rose)';

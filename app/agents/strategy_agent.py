@@ -68,31 +68,7 @@ Construct a comprehensive Business Model Canvas with EXACTLY these JSON keys:
 }}
 """
         bmc_json = llm_client.generate_json(prompt=prompt, system_prompt=system_prompt)
-        
-        if isinstance(bmc_json, list) and len(bmc_json) > 0:
-            bmc_json = bmc_json[0]
-        if isinstance(bmc_json, dict) and "business_model_canvas" in bmc_json:
-            bmc_json = bmc_json["business_model_canvas"]
-        if isinstance(bmc_json, dict) and "bmc" in bmc_json:
-            bmc_json = bmc_json["bmc"]
-        if not isinstance(bmc_json, dict):
-            bmc_json = {}
-            
-        try:
-            bmc = BusinessModelCanvas(**bmc_json)
-        except Exception as err:
-            print(f"Warning: BusinessModelCanvas parsing issue ({err}). Using standard structure.")
-            bmc = BusinessModelCanvas(
-                value_proposition=["Automated AI decision workflow", "Real-time market signal validation", "Optimized unit economics"],
-                customer_segments=["Mid-Market B2B", "Enterprise Startups", "Venture Studios"],
-                revenue_streams=["SaaS Subscription Tiers", "API Usage Billing", "Enterprise Auditing Fees"],
-                channels=["Product-Led Growth", "Direct Enterprise Sales", "Developer Ecosystem"],
-                customer_relationships=["Automated Onboarding", "Dedicated Success Manager"],
-                key_activities=["Agent Orchestration", "Continuous Model Tuning", "Vector RAG Indexing"],
-                key_resources=["Proprietary Multi-Agent Engine", "Cohere RAG Vector Store", "Groq LPU Hardware"],
-                key_partnerships=["Cloud Infrastructure Partners", "AI Security Labs"],
-                cost_structure=["LLM Compute Costs", "Engineering R&D", "Customer Acquisition"]
-            )
+        bmc = BusinessModelCanvas(**bmc_json)
 
         logs.append(self.log(
             action="Business Model Canvas Synthesis",
