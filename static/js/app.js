@@ -123,7 +123,10 @@ async function startAnalysis() {
       body: JSON.stringify({ idea_description: idea, initial_budget_usd: budget })
     });
     clearInterval(interval);
-    if (!response.ok) throw new Error("Analysis failed");
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.detail || "Analysis failed due to server response.");
+    }
     currentReport = await response.json();
     
     // Append actual backend agent logs if present
