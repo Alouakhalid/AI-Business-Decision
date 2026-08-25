@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DecisionOS AI - Advanced Autonomous Multi-Agent Strategy & Admin Engine</title>
+  
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- 1. LIQUID HERO SECTION -->
+  <section class="hero-liquid-wrapper">
+    <nav class="hero-nav">
+      <div class="brand-pill">
+        <span class="brand-dot"></span>
+        DecisionOS <span style="color: var(--shout-yellow);">AI</span>
+      </div>
+
+      <div class="status-pills-wrapper">
+        <div class="nav-pill-status" id="groqStatus" onclick="openAdminModal()">
+          <span class="status-dot-active"></span> Groq LLM API
+        </div>
+        <div class="nav-pill-status" id="cohereStatus" onclick="openAdminModal()">
+          <span class="status-dot-active"></span> Cohere Rerank API
+        </div>
+        <button class="btn-admin-pill" onclick="openAdminModal()">
+          <i class="fa-solid fa-sliders"></i> Admin Portal
+        </button>
+      </div>
+    </nav>
+
+    <div class="hero-content-grid">
+      <div class="hero-tag-badge">
+        <i class="fa-solid fa-brain"></i> Multi-Agent Venture Engine v5.0 (Enterprise)
+      </div>
+
+      <h1 class="hero-headline">
+        Architect, Simulate & Challenge Business Strategy.
+      </h1>
+
+      <p class="hero-subtext">
+        Deploy an autonomous 6-agent board to generate business model blueprints, map interactive Node architectures, edit financial spreadsheets, and chat directly in the Agent Terminal.
+      </p>
+
+      <!-- Glassmorphic Command Input Card -->
+      <div class="glass-input-card">
+        <label style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em; color: #0A0A0A; display: block; margin-bottom: 0.6rem;">
+          <i class="fa-solid fa-link"></i> Web Context Scraper (Optional)
+        </label>
+        <div class="url-ingest-row">
+          <input type="text" id="urlInput" class="url-input" placeholder="https://example.com/competitor">
+          <button class="btn-url-pill" onclick="ingestUrl()">Scrape & Extract</button>
+        </div>
+
+        <label style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em; color: #0A0A0A; display: block; margin-bottom: 0.6rem;">
+          <i class="fa-solid fa-sparkles"></i> Enter Venture Concept or Business Strategy Hypothesis
+        </label>
+        
+        <textarea id="ideaInput" class="hero-textarea" placeholder="e.g. An AI-powered B2B platform for automated legal contract risk auditing, instant redlining, and compliance clause negotiation using fast LLMs and vector RAG memory..."></textarea>
+        
+        <div class="presets-flex">
+          <span style="font-size: 0.8rem; font-weight: 800; color: #0A0A0A; text-transform: uppercase;">Presets:</span>
+          <button class="preset-chip-pill" onclick="applyPreset('B2B AI Legal Auditor')">⚡ B2B AI Legal Auditor</button>
+          <button class="preset-chip-pill" onclick="applyPreset('Autonomous Fleet Logistics')">🚚 Fleet Logistics AI</button>
+          <button class="preset-chip-pill" onclick="applyPreset('Precision Health Longevity AI')">🧬 Longevity Health AI</button>
+          <button class="preset-chip-pill" onclick="applyPreset('Micro-SaaS Code Copilot')">💻 Micro-SaaS Code Review</button>
+        </div>
+
+        <div class="input-controls-row">
+          <div class="control-pill-group">
+            <span class="control-label">Target Industry</span>
+            <select id="industryInput" class="control-select">
+              <option value="Technology / B2B AI SaaS">Technology / B2B AI SaaS</option>
+              <option value="FinTech & InsurTech">FinTech & InsurTech</option>
+              <option value="HealthTech & Biotech">HealthTech & Biotech</option>
+            </select>
+          </div>
+
+          <div class="control-pill-group">
+            <span class="control-label">Target Market</span>
+            <select id="marketInput" class="control-select">
+              <option value="Global Enterprise B2B">Global Enterprise B2B</option>
+              <option value="Mid-Market SaaS">Mid-Market SaaS</option>
+              <option value="SMB & Developer Tools">SMB & Developer Tools</option>
+            </select>
+          </div>
+
+          <div class="control-pill-group">
+            <span class="control-label">Initial Capital ($)</span>
+            <input type="number" id="budgetInput" class="control-input" value="100000" step="10000">
+          </div>
+
+          <button id="analyzeBtn" class="btn-cta-pill" onclick="startAnalysis()">
+            <i class="fa-solid fa-rocket"></i> Launch C-Suite Swarm
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+    <!-- 6-AGENT C-SUITE ROSTER -->
+    <section class="chart-glass-card" style="margin-bottom: 3rem;">
+      <div class="console-header-flex" style="margin-bottom: 1rem;">
+        <h2 class="section-headline">
+          <i class="fa-solid fa-users-gear" style="color: var(--shout-yellow);"></i> Autonomous 6-Agent C-Suite Swarm
+        </h2>
+        <span class="brand-pill" style="background: #0A0A0A; color: var(--shout-yellow); font-size: 0.75rem;">
+          6 Active Specialized Agents
+        </span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+        <div style="background: rgba(0,0,0,0.6); border: 1px solid var(--shout-yellow); border-radius: 16px; padding: 1rem; text-align: center;">
+          <span class="badge-agent-pill badge-ceo" style="font-size: 0.8rem;">1. CEO</span>
+          <div style="font-weight: 800; font-size: 0.9rem; margin: 0.5rem 0 0.2rem 0; color: #FFF;">Chief Executive</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted-dark);">Boardroom Consensus & Orchestration</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.6); border: 1px solid var(--accent-cyan); border-radius: 16px; padding: 1rem; text-align: center;">
+          <span class="badge-agent-pill badge-strategy" style="font-size: 0.8rem;">2. CSO</span>
+          <div style="font-weight: 800; font-size: 0.9rem; margin: 0.5rem 0 0.2rem 0; color: #FFF;">Chief Strategy</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted-dark);">Cohere RAG & Business Model Canvas</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.6); border: 1px solid var(--accent-emerald); border-radius: 16px; padding: 1rem; text-align: center;">
+          <span class="badge-agent-pill badge-cfo" style="font-size: 0.8rem;">3. CFO</span>
+          <div style="font-weight: 800; font-size: 0.9rem; margin: 0.5rem 0 0.2rem 0; color: #FFF;">Chief Financial</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted-dark);">Monte Carlo 1K Runs & P&L Projections</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.6); border: 1px solid #A855F7; border-radius: 16px; padding: 1rem; text-align: center;">
+          <span class="badge-agent-pill badge-cto" style="font-size: 0.8rem;">4. CTO</span>
+          <div style="font-weight: 800; font-size: 0.9rem; margin: 0.5rem 0 0.2rem 0; color: #FFF;">Chief Technology</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted-dark);">Node Architecture Topology Graph</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.6); border: 1px solid #EC4899; border-radius: 16px; padding: 1rem; text-align: center;">
+          <span class="badge-agent-pill badge-cmo" style="font-size: 0.8rem;">5. CMO</span>
+          <div style="font-weight: 800; font-size: 0.9rem; margin: 0.5rem 0 0.2rem 0; color: #FFF;">Chief Marketing</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted-dark);">GTM Channels & Pitch Presentation</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.6); border: 1px solid var(--accent-rose); border-radius: 16px; padding: 1rem; text-align: center;">
+          <span class="badge-agent-pill badge-redteam" style="font-size: 0.8rem;">6. Red Team</span>
+          <div style="font-weight: 800; font-size: 0.9rem; margin: 0.5rem 0 0.2rem 0; color: #FFF;">Lead Auditor</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted-dark);">Adversarial Security & Risk Audit</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Agent Deliberation Console -->
+    <section id="deliberationConsole" class="glass-console-card">
+      <div class="console-header-flex">
+        <h2 class="section-headline">
+          <i class="fa-solid fa-brain" style="color: var(--shout-yellow);"></i> Live Multi-Agent Deliberation Pipeline
+        </h2>
+        <span id="deliberationStatus" class="brand-pill" style="background: var(--shout-yellow); color: #0A0A0A; font-size: 0.8rem;">
+          <i class="fa-solid fa-circle-notch fa-spin"></i> Deliberating...
+        </span>
+      </div>
+      <div id="logStream" class="log-stream-box"></div>
+    </section>
+
+    <!-- Dashboard Results Wrapper -->
+    <section id="dashboardResults" class="results-dashboard">
+      
+      <!-- Executive Summary Banner -->
+      <div class="exec-banner-glass">
+        <div>
+          <span style="font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: var(--shout-yellow);">
+            Executive Strategic Blueprint
+          </span>
+          <h2 id="reportTitle" class="report-headline">Venture Title</h2>
+          <p id="execSummary" class="exec-text">Executive summary details will load here...</p>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+          <div class="score-badge-glass">
+            <div id="viabilityScore" class="score-num">88.5</div>
+            <div class="score-lbl">Viability Score</div>
+          </div>
+          <button class="btn-cta-pill" style="padding: 0.6rem 1.4rem; font-size: 0.85rem;" onclick="openPitchModal()">
+            <i class="fa-solid fa-desktop"></i> View Pitch Deck
+          </button>
+        </div>
+      </div>
+
+      <!-- NEW: INTERACTIVE NODE ARCHITECTURE GRAPH -->
+      <div class="chart-glass-card">
+        <div class="console-header-flex">
+          <h2 class="section-headline">
+            <i class="fa-solid fa-diagram-project" style="color: var(--shout-yellow);"></i> Interactive System Architecture (CTO)
+          </h2>
+          <span class="brand-pill" style="background: rgba(168, 85, 247, 0.2); color: #A855F7;">
+            Node-Based Topology
+          </span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted-dark); margin-bottom: 1rem;">
+          Hover over nodes to see estimated infrastructure costs and technical details.
+        </p>
+        <div id="nodeGraphContainer" class="node-graph-container">
+          <!-- Nodes injected via JS -->
+          <svg id="nodeEdgesSvg" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></svg>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE EDITABLE SPREADSHEET FINANCIAL TABLE & CSV EXPORTER -->
+      <div class="chart-glass-card">
+        <div class="console-header-flex">
+          <h2 class="section-headline">
+            <i class="fa-solid fa-table" style="color: var(--shout-yellow);"></i> Interactive Financial Spreadsheet & Live P&L Editor
+          </h2>
+          <button class="btn-admin-pill" onclick="exportFinancialCSV()">
+            <i class="fa-solid fa-file-csv"></i> Download CSV
+          </button>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted-dark); margin-bottom: 1rem;">
+          Directly edit annual Revenue or OPEX values in the table below to dynamically recalculate Net Profit and sync with all charts:
+        </p>
+        
+        <table class="financial-table-grid">
+          <thead>
+            <tr>
+              <th>Financial Metric</th>
+              <th>Year 1 Projections ($)</th>
+              <th>Year 2 Projections ($)</th>
+              <th>Year 3 Projections ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Annual Revenue</td>
+              <td><input type="number" id="tblRevY1" class="table-editable-input" onchange="updateTableProjections()"></td>
+              <td><input type="number" id="tblRevY2" class="table-editable-input" onchange="updateTableProjections()"></td>
+              <td><input type="number" id="tblRevY3" class="table-editable-input" onchange="updateTableProjections()"></td>
+            </tr>
+            <tr>
+              <td>Operating Expenses (OPEX)</td>
+              <td><input type="number" id="tblOpexY1" class="table-editable-input" onchange="updateTableProjections()"></td>
+              <td><input type="number" id="tblOpexY2" class="table-editable-input" onchange="updateTableProjections()"></td>
+              <td><input type="number" id="tblOpexY3" class="table-editable-input" onchange="updateTableProjections()"></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 800; color: var(--shout-yellow);">Net Profit / (Loss)</td>
+              <td id="tblProfitY1" style="font-weight: 800; color: var(--accent-emerald);">$0</td>
+              <td id="tblProfitY2" style="font-weight: 800; color: var(--accent-emerald);">$0</td>
+              <td id="tblProfitY3" style="font-weight: 800; color: var(--accent-emerald);">$0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Financial Projections & Sensitivity Simulator -->
+      <div class="charts-two-col">
+        <div class="chart-glass-card">
+          <h2 class="section-headline" style="margin-bottom: 1.25rem;">
+            <i class="fa-solid fa-chart-line" style="color: var(--shout-yellow);"></i> 3-Year P&L Trajectory
+          </h2>
+          <div style="height: 270px; position: relative;">
+            <canvas id="financialChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE "RED TEAM VS HUMAN" CHALLENGER ARENA -->
+      <div class="challenger-card">
+        <div class="console-header-flex">
+          <h2 class="section-headline" style="color: var(--accent-rose);">
+            <i class="fa-solid fa-shield-cat"></i> Red Team Challenger Arena
+          </h2>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text-muted-dark);">
+          Submit your strategic counter-defense against identified Red Team vulnerability threats. The AI auditor will score your defense (0-100)!
+        </p>
+        <div style="margin-top: 1rem;">
+          <select id="challengeVulnSelect" class="control-select" style="width: 100%; margin-top: 0.4rem; background: #000; color: #FFF; border-color: var(--accent-rose);"></select>
+        </div>
+        <textarea id="userDefenseInput" class="challenger-textarea" placeholder="Describe your counter-defense strategy..."></textarea>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <button id="submitDefenseBtn" class="btn-cta-pill" style="background: var(--accent-rose); border-color: var(--accent-rose); color: #FFF;" onclick="submitRedTeamDefense()">
+            <i class="fa-solid fa-gavel"></i> Submit Counter-Defense
+          </button>
+        </div>
+        <div id="defenseResultBox" style="display: none; margin-top: 1.5rem; background: #000; border: 1px solid var(--accent-rose); border-radius: 16px; padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-weight: 800; font-size: 1.1rem; color: var(--accent-rose);">Auditor Verdict: <span id="defenseVerdict">ACCEPTED</span></span>
+            <span class="score-badge-glass" style="padding: 0.4rem 1rem; font-size: 1.1rem;" id="defenseScoreBadge">88/100</span>
+          </div>
+          <p id="defenseCritique" style="font-size: 0.9rem; color: var(--text-muted-dark); line-height: 1.5;"></p>
+        </div>
+      </div>
+
+      <!-- NEW: TERMINAL AGENT CHAT -->
+      <div class="terminal-card">
+        <div class="terminal-header">
+          <div class="terminal-dot red"></div>
+          <div class="terminal-dot yellow"></div>
+          <div class="terminal-dot green"></div>
+        </div>
+        <div id="terminalOutput" class="terminal-output">
+          <div>DecisionOS Terminal v5.0 initialized.</div>
+          <div>C-Suite agents online. Type a message to any agent...</div>
+        </div>
+        <div class="terminal-input-row">
+          <span class="terminal-prompt-prefix">user@decisionos:~$</span>
+          <select id="terminalAgentSelect" style="background: transparent; color: var(--shout-yellow); border: 1px dashed var(--shout-yellow); outline: none; padding: 2px; font-family: var(--font-mono);">
+            <option value="ceo">@CEO</option>
+            <option value="cso">@CSO</option>
+            <option value="cfo">@CFO</option>
+            <option value="cto">@CTO</option>
+            <option value="cmo">@CMO</option>
+            <option value="redteam">@RedTeam</option>
+          </select>
+          <input type="text" id="terminalInput" class="terminal-input" placeholder="Type your query and press Enter..." onkeydown="handleTerminalKey(event)">
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ADMIN CONFIGURATION PORTAL MODAL -->
+  <div id="adminModal" class="modal-overlay">
+    <div class="modal-dialog-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--shout-yellow);">
+          <i class="fa-solid fa-sliders"></i> Admin API & LLM Portal
+        </h2>
+        <button onclick="closeAdminModal()" style="background: transparent; border: none; color: #FFF; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <div class="modal-form-group">
+        <label class="control-label" style="color: #FFF;">Groq API Key</label>
+        <input type="password" id="adminGroqKey" class="modal-input" placeholder="gsk_...">
+      </div>
+
+      <div class="modal-form-group">
+        <label class="control-label" style="color: #FFF;">Cohere API Key</label>
+        <input type="password" id="adminCohereKey" class="modal-input" placeholder="...">
+      </div>
+
+      <div class="modal-form-group">
+        <label class="control-label" style="color: #FFF;">Primary LLM Model (Inference)</label>
+        <select id="adminPrimaryModel" class="control-select" style="background: #000; color: #FFF; border-color: var(--shout-yellow);">
+          <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (Ultra Fast)</option>
+          <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (Low Latency)</option>
+          <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b (High Intelligence)</option>
+        </select>
+      </div>
+
+      <div id="adminTestResult" style="display: none; background: #000; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem; font-size: 0.85rem; margin: 1rem 0;"></div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+        <button class="btn-outline-pill" style="padding: 0.6rem 1.2rem;" onclick="testAdminKeys()">
+          <i class="fa-solid fa-plug-circle-check"></i> Test Connection
+        </button>
+        <button class="btn-cta-pill" style="padding: 0.6rem 1.8rem;" onclick="saveAdminConfig()">
+          <i class="fa-solid fa-floppy-disk"></i> Save & Apply
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE PITCH DECK PRESENTATION MODAL -->
+  <div id="pitchModal" class="modal-overlay">
+    <div class="modal-dialog-box" style="max-width: 900px; min-height: 500px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="brand-pill" style="font-size: 0.75rem;"><i class="fa-solid fa-slideshare"></i> VC Pitch Presentation</span>
+        <button onclick="closePitchModal()" style="background: transparent; border: none; color: #FFF; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+      <div style="margin: 2rem 0;">
+        <span id="slideNumber" style="font-size: 10px; font-weight: 900; color: var(--shout-yellow); text-transform: uppercase; letter-spacing: 0.15em;">SLIDE 1 OF 6</span>
+        <h2 id="slideTitle" style="font-size: 2.2rem; font-weight: 900; color: #FFF; margin: 0.5rem 0 1rem 0;">Slide Title</h2>
+        <ul id="slideBullets" class="bmc-bullet-list" style="font-size: 1.1rem; gap: 0.75rem;"></ul>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+        <button class="btn-outline-pill" onclick="prevSlide()"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+        <button class="btn-cta-pill" onclick="nextSlide()">Next Slide <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
