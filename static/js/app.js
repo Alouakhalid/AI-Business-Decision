@@ -177,6 +177,23 @@ function renderResults(report) {
   document.getElementById('tblOpexY2').value = fin.operating_expenses.year2;
   document.getElementById('tblOpexY3').value = fin.operating_expenses.year3;
   updateTableProjections();
+
+  // Populate Red Team Challenger vulnerability options
+  const vulnSelect = document.getElementById('challengeVulnSelect');
+  if (vulnSelect) {
+    vulnSelect.innerHTML = '';
+    const vulns = (report.risk_assessment && report.risk_assessment.critical_vulnerabilities) || [];
+    if (vulns.length > 0) {
+      vulns.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.vulnerability || v.red_team_attack_scenario || 'High CAC erosion risk';
+        opt.innerText = `[${v.severity || 'HIGH'}] ${v.vulnerability || v.red_team_attack_scenario}`;
+        vulnSelect.appendChild(opt);
+      });
+    } else {
+      vulnSelect.innerHTML = `<option value="High CAC erosion and competitive pricing attack">High CAC Erosion & Competitive Threat</option>`;
+    }
+  }
 }
 
 function getNodeIcon(type) {
@@ -375,7 +392,88 @@ function updateTableProjections() {
       });
   }
 }
-function exportFinancialCSV() {}
-async function submitRedTeamDefense() {}
+function exportFinancialCSV() {
+  const r1 = parseFloat(document.getElementById('tblRevY1').value) || 0;
+  const r2 = parseFloat(document.getElementById('tblRevY2').value) || 0;
+  const r3 = parseFloat(document.getElementById('tblRevY3').value) || 0;
+  const o1 = parseFloat(document.getElementById('tblOpexY1').value) || 0;
+  const o2 = parseFloat(document.getElementById('tblOpexY2').value) || 0;
+  const o3 = parseFloat(document.getElementById('tblOpexY3').value) || 0;
+  
+  const p1 = r1 - o1; const p2 = r2 - o2; const p3 = r3 - o3;
+
+  const csvRows = [
+    ["Financial Metric", "Year 1 ($)", "Year 2 ($)", "Year 3 ($)"],
+    ["Annual Revenue", r1, r2, r3],
+    ["Operating Expenses (OPEX)", o1, o2, o3],
+    ["Net Profit / (Loss)", p1, p2, p3]
+  ];
+
+  const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(e => e.join(",")).join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "decisionos_financial_projections.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+async function submitRedTeamDefense() {
+  const vulnSelect = document.getElementById('challengeVulnSelect');
+  const vulnerability = vulnSelect ? vulnSelect.value : '';
+  const defenseInput = document.getElementById('userDefenseInput');
+  const userDefense = defenseInput ? defenseInput.value.trim() : '';
+
+  if (!userDefense) {
+    alert("Please enter your strategic counter-defense!");
+    return;
+  }
+
+  const btn = document.getElementById('submitDefenseBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Auditing Counter-Defense...`;
+
+  try {
+    const res = await fetch('/api/redteam/challenge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vulnerability: vulnerability || "High CAC Erosion & Competitive Attack", user_defense: userDefense })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Audit submission failed.");
+
+    const resultBox = document.getElementById('defenseResultBox');
+    const verdictEl = document.getElementById('defenseVerdict');
+    const scoreBadgeEl = document.getElementById('defenseScoreBadge');
+    const critiqueEl = document.getElementById('defenseCritique');
+
+    resultBox.style.display = 'block';
+    const isAccepted = data.verdict === 'ACCEPTED' || (data.defense_score && data.defense_score >= 70);
+    verdictEl.innerText = data.verdict || (isAccepted ? "ACCEPTED" : "REJECTED");
+    verdictEl.style.color = isAccepted ? 'var(--accent-emerald)' : 'var(--accent-rose)';
+    
+    const scoreNum = Math.round(data.defense_score || 85);
+    scoreBadgeEl.innerText = `${scoreNum}/100`;
+    scoreBadgeEl.style.background = isAccepted ? 'var(--accent-emerald)' : 'var(--accent-rose)';
+    scoreBadgeEl.style.color = '#FFFFFF';
+
+    let html = `<div style="margin-bottom:0.75rem;">${data.red_team_critique || 'The auditor evaluated your defense.'}</div>`;
+    if (data.actionable_enhancements && data.actionable_enhancements.length > 0) {
+      html += `<div style="font-weight:bold; color:var(--shout-yellow); margin-top:0.5rem;">Actionable Enhancements:</div><ul style="margin-left:1.25rem; margin-top:0.25rem; color:var(--text-muted-dark);">`;
+      data.actionable_enhancements.forEach(e => html += `<li>${e}</li>`);
+      html += `</ul>`;
+    }
+    critiqueEl.innerHTML = html;
+    resultBox.scrollIntoView({ behavior: 'smooth' });
+
+  } catch (err) {
+    alert(`Red Team Audit Error: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-gavel"></i> Submit Counter-Defense`;
+  }
+}
 function openPitchModal() { document.getElementById('pitchModal').style.display = 'flex'; }
 function closePitchModal() { document.getElementById('pitchModal').style.display = 'none'; }
