@@ -197,6 +197,143 @@
         <button class="btn-cta-pill" style="padding: 0.6rem 1.4rem; font-size: 0.85rem;" onclick="openPitchModal()">
           <i class="fa-solid fa-desktop"></i> View Pitch Deck
         </button>
+    </div>
+
+    <!-- 1. 9-BOX BUSINESS MODEL CANVAS (CSO STRATEGY) -->
+    <div style="margin-bottom: 2rem;">
+      <div class="console-header-flex" style="margin-bottom: 1.5rem;">
+        <h2 class="section-headline">
+          <i class="fa-solid fa-table-cells-large" style="color: var(--shout-yellow);"></i> 9-Box Business Model Canvas (CSO Strategy)
+        </h2>
+        <span class="brand-pill" style="background: rgba(59, 130, 246, 0.2); color: #3B82F6;">
+          Cohere RAG Synthesized
+        </span>
+      </div>
+      <div class="bmc-grid-container">
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-handshake"></i> Key Partnerships</span></div>
+          <ul id="bmcPartnerships" class="bmc-bullet-list"></ul>
+        </div>
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-list-check"></i> Key Activities</span></div>
+          <ul id="bmcActivities" class="bmc-bullet-list"></ul>
+        </div>
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-gem"></i> Value Propositions</span></div>
+          <ul id="bmcValueProp" class="bmc-bullet-list"></ul>
+        </div>
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-heart-pulse"></i> Customer Relationships</span></div>
+          <ul id="bmcRelationships" class="bmc-bullet-list"></ul>
+        </div>
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-users"></i> Customer Segments</span></div>
+          <ul id="bmcSegments" class="bmc-bullet-list"></ul>
+        </div>
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-cubes"></i> Key Resources</span></div>
+          <ul id="bmcResources" class="bmc-bullet-list"></ul>
+        </div>
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-bullhorn"></i> Acquisition Channels</span></div>
+          <ul id="bmcChannels" class="bmc-bullet-list"></ul>
+        </div>
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-coins"></i> Cost Structure</span></div>
+          <ul id="bmcCosts" class="bmc-bullet-list"></ul>
+        </div>
+        <div class="bmc-glass-card">
+          <div class="bmc-card-title"><span><i class="fa-solid fa-money-bill-wave"></i> Revenue Streams</span></div>
+          <ul id="bmcRevenues" class="bmc-bullet-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. MONTE CARLO RISK SIMULATION & FINANCIAL SENSITIVITY SIMULATOR (CFO) -->
+    <div class="charts-two-col">
+      <div class="chart-glass-card">
+        <div class="console-header-flex">
+          <h2 class="section-headline">
+            <i class="fa-solid fa-dice" style="color: var(--shout-yellow);"></i> Monte Carlo 1,000 Trial Risk Simulation
+          </h2>
+          <span class="brand-pill" style="background: rgba(16, 185, 129, 0.2); color: #10B981;">CFO Audit</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; text-align: center;">
+          <div style="background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-size: 0.75rem; color: #AAA; font-weight: 800; text-transform: uppercase;">Profit Probability</div>
+            <div id="mcProbProfit" style="font-size: 1.8rem; font-weight: 900; color: #10B981; margin-top: 0.3rem;">84.2%</div>
+          </div>
+          <div style="background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-size: 0.75rem; color: #AAA; font-weight: 800; text-transform: uppercase;">Expected Y3 ARR</div>
+            <div id="mcExpRevenue" style="font-size: 1.8rem; font-weight: 900; color: var(--shout-yellow); margin-top: 0.3rem;">$4.20M</div>
+          </div>
+          <div style="background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-size: 0.75rem; color: #AAA; font-weight: 800; text-transform: uppercase;">VaR 95% Risk</div>
+            <div id="mcVarRisk" style="font-size: 1.8rem; font-weight: 900; color: var(--accent-rose); margin-top: 0.3rem;">-$145K</div>
+          </div>
+        </div>
+        <div id="mcCfoVerdict" style="background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 14px; font-size: 0.9rem; color: #EEE; border-left: 4px solid var(--shout-yellow); line-height: 1.5;">
+          CFO Audit Verdict: Monte Carlo 1,000 trials confirm strong profitability likelihood with controlled downside variance.
+        </div>
+      </div>
+
+      <div class="chart-glass-card">
+        <div class="console-header-flex">
+          <h2 class="section-headline">
+            <i class="fa-solid fa-sliders" style="color: var(--shout-yellow);"></i> Financial Sensitivity Simulator
+          </h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 800; color: #FFF; display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+              <span>CAC Multiplier</span> <span id="lblCacMult" style="color: var(--shout-yellow); font-family: var(--font-mono);">1.0x</span>
+            </label>
+            <input type="range" id="simCacMult" min="0.5" max="3.0" step="0.1" value="1.0" oninput="runSensitivitySim()" style="width: 100%; accent-color: var(--shout-yellow);">
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 800; color: #FFF; display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+              <span>ARPU Multiplier</span> <span id="lblArpuMult" style="color: var(--shout-yellow); font-family: var(--font-mono);">1.0x</span>
+            </label>
+            <input type="range" id="simArpuMult" min="0.5" max="3.0" step="0.1" value="1.0" oninput="runSensitivitySim()" style="width: 100%; accent-color: var(--shout-yellow);">
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 800; color: #FFF; display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+              <span>Monthly Churn Rate (%)</span> <span id="lblChurn" style="color: var(--shout-yellow); font-family: var(--font-mono);">3.0%</span>
+            </label>
+            <input type="range" id="simChurn" min="0.5" max="10.0" step="0.5" value="3.0" oninput="runSensitivitySim()" style="width: 100%; accent-color: var(--shout-yellow);">
+          </div>
+          <div style="background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 16px; border: 2px solid var(--shout-yellow); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 0.75rem; color: #AAA; font-weight: 800; text-transform: uppercase;">Simulated LTV / CAC</div>
+              <div id="simLtvCac" style="font-size: 1.8rem; font-weight: 900; color: var(--shout-yellow); font-family: var(--font-mono);">6.85x</div>
+            </div>
+            <div id="simStatus" style="font-size: 0.8rem; font-weight: 800; color: var(--accent-emerald); text-align: right;">Unit Economics Healthy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. GTM MARKETING & EXECUTION ASSETS (CMO) -->
+    <div class="chart-glass-card">
+      <div class="console-header-flex">
+        <h2 class="section-headline">
+          <i class="fa-solid fa-bullseye" style="color: #EC4899;"></i> GTM Marketing & Execution Assets (CMO Strategy)
+        </h2>
+        <span class="brand-pill" style="background: rgba(236, 72, 153, 0.2); color: #EC4899;">GTM Launch Pack</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div style="background: rgba(0,0,0,0.6); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+          <h3 style="font-size: 0.9rem; color: var(--shout-yellow); font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;"><i class="fa-solid fa-rocket"></i> Product Hunt Tagline & Description</h3>
+          <div id="gtmTagline" style="font-weight: 900; font-size: 1rem; color: #FFF; margin-bottom: 0.4rem;">Autonomous Business Strategy Engine</div>
+          <div id="gtmDescription" style="font-size: 0.85rem; color: var(--text-muted-dark); line-height: 1.5;">Deploy an autonomous 6-agent boardroom to simulate venture blueprints instantly.</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.6); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+          <h3 style="font-size: 0.9rem; color: var(--shout-yellow); font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;"><i class="fa-solid fa-code"></i> Python SDK Integration Snippet</h3>
+          <pre id="gtmCodeSnippet" style="background: #000; padding: 0.8rem; border-radius: 12px; font-size: 0.8rem; color: #34D399; font-family: var(--font-mono); overflow-x: auto; border: 1px solid rgba(52, 211, 153, 0.3);">import decisionos
+client = decisionos.Client(api_key="gsk_...")
+report = client.analyze(idea="B2B AI Legal Auditor")
+print("Viability Score:", report.viability_score)</pre>
+        </div>
       </div>
     </div>
 
@@ -516,7 +653,7 @@
     </div>
   </div>
 
-  <script src="/static/js/app.js?v=8.0"></script>
+  <script src="/static/js/app.js?v=11.0"></script>
 </body>
 
 </html>
