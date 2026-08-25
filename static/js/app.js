@@ -276,7 +276,7 @@ function renderNodeGraph(nodes, edges) {
   });
 }
 
-// --- TERMINAL AGENT CHAT ---
+// --- TERMINAL AGENT CHAT (STREAMING & NO ASTERISKS) ---
 async function handleTerminalKey(e) {
   if(e.key === 'Enter') {
     const input = document.getElementById('terminalInput');
@@ -284,9 +284,14 @@ async function handleTerminalKey(e) {
     if(!q) return;
     const agent = document.getElementById('terminalAgentSelect').value;
     input.value = '';
+    input.disabled = true;
     
     const out = document.getElementById('terminalOutput');
-    out.innerHTML += `<div style="color:#FFF;">user@decisionos:~$ @${agent.toUpperCase()} ${q}</div>`;
+    const userLine = document.createElement('div');
+    userLine.style.color = '#FFFFFF';
+    userLine.style.fontWeight = 'bold';
+    userLine.innerText = `user@decisionos:~$ @${agent.toUpperCase()} ${q}`;
+    out.appendChild(userLine);
     out.scrollTop = out.scrollHeight;
     
     try {
@@ -295,10 +300,45 @@ async function handleTerminalKey(e) {
         body: JSON.stringify({ agent_id: agent, query: q })
       });
       const data = await res.json();
-      out.innerHTML += `<div style="color:var(--shout-yellow); margin-bottom:1rem;">[${agent.toUpperCase()}] ${data.response}</div>`;
-      out.scrollTop = out.scrollHeight;
+      
+      // Clean all markdown asterisks (*, **), hashes (#), and backticks (`)
+      let cleanText = (data.response || '')
+        .replace(/\*\*/g, '')
+        .replace(/\*/g, '')
+        .replace(/#/g, '')
+        .replace(/`/g, '')
+        .trim();
+
+      const responseEl = document.createElement('div');
+      responseEl.style.color = 'var(--shout-yellow)';
+      responseEl.style.marginBottom = '1rem';
+      responseEl.style.lineHeight = '1.5';
+      responseEl.innerHTML = `<strong style="color: #FFF;">[${agent.toUpperCase()}]</strong> `;
+      out.appendChild(responseEl);
+      
+      const words = cleanText.split(/\s+/);
+      let wordIdx = 0;
+      
+      const streamTimer = setInterval(() => {
+        if (wordIdx < words.length) {
+          responseEl.innerHTML += words[wordIdx] + ' ';
+          out.scrollTop = out.scrollHeight;
+          wordIdx++;
+        } else {
+          clearInterval(streamTimer);
+          input.disabled = false;
+          input.focus();
+        }
+      }, 30); // 30ms per word typewriter streaming speed
+      
     } catch(err) {
-      out.innerHTML += `<div style="color:var(--accent-rose);">Error reaching agent.</div>`;
+      const errEl = document.createElement('div');
+      errEl.style.color = 'var(--accent-rose)';
+      errEl.innerText = `Error reaching @${agent.toUpperCase()}`;
+      out.appendChild(errEl);
+      out.scrollTop = out.scrollHeight;
+      input.disabled = false;
+      input.focus();
     }
   }
 }
