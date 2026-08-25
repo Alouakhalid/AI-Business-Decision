@@ -211,6 +211,60 @@ body {
   animation: dashFlow 1.5s linear infinite;
 }
 
+.node-filter-btn {
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #AAA;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.node-filter-btn.active, .node-filter-btn:hover {
+  background: var(--shout-yellow);
+  color: #000;
+  border-color: var(--shout-yellow);
+  box-shadow: 0 0 12px rgba(253, 224, 71, 0.4);
+}
+
+.tech-node {
+  position: absolute;
+  width: 140px;
+  padding: 0.75rem;
+  background: rgba(15, 15, 15, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  cursor: grab;
+  user-select: none;
+  z-index: 2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.2rem;
+}
+.tech-node:hover {
+  transform: scale(1.05);
+  border-color: var(--shout-yellow);
+  box-shadow: 0 0 20px rgba(253, 224, 71, 0.4);
+  z-index: 10;
+}
+.tech-node:active {
+  cursor: grabbing;
+}
+.tech-node.pinging {
+  animation: nodePulse 0.6s ease-in-out 2;
+}
+@keyframes nodePulse {
+  0% { box-shadow: 0 0 0 0 rgba(253, 224, 71, 0.8); }
+  70% { box-shadow: 0 0 0 20px rgba(253, 224, 71, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(253, 224, 71, 0); }
+}
+
 /* TERMINAL */
 .terminal-card {
   background: #000; border: 1px solid #333; border-radius: var(--radius-card); padding: 1.5rem; font-family: var(--font-mono); box-shadow: 0 20px 40px rgba(0,0,0,0.5);

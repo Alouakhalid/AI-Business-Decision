@@ -209,32 +209,59 @@ function getNodeIcon(type) {
   return '<i class="fa-solid fa-cubes"></i>';
 }
 
-// --- ENHANCED CTO NODE GRAPH RENDERER ---
+// --- FULLY INTERACTIVE CTO DRAGGABLE & INSPECTABLE NODE GRAPH ---
+let globalGraphNodes = [];
+let globalGraphEdges = [];
+let nodePositions = {};
+let activeDraggedNode = null;
+let dragOffset = { x: 0, y: 0 };
+
+function inspectNode(nodeId) {
+  const node = globalGraphNodes.find(n => n.id === nodeId);
+  if (!node) return;
+
+  const modal = document.getElementById('nodeInspectorModal');
+  document.getElementById('inspectorTitle').innerText = node.label || 'Component Node';
+  document.getElementById('inspectorIcon').innerHTML = getNodeIcon(node.type);
+  document.getElementById('inspectorBadge').innerText = (node.type || 'service').toUpperCase();
+  document.getElementById('inspectorDescription').innerText = node.description || 'Core service orchestrating backend business logic and agent state management.';
+  document.getElementById('inspectorCost').innerText = node.cost_estimate || '$50/mo';
+  
+  // Random dynamic latency simulation for realism
+  const latencies = { frontend: '~12ms (Edge CDN)', backend: '~24ms (Region US-East)', database: '~8ms (VPC Peer)', ai_model: '~180ms (Groq LPU)' };
+  const typeKey = (node.type || '').toLowerCase();
+  let lat = '~20ms';
+  if (typeKey.includes('frontend')) lat = latencies.frontend;
+  else if (typeKey.includes('backend')) lat = latencies.backend;
+  else if (typeKey.includes('database') || typeKey.includes('storage')) lat = latencies.database;
+  else if (typeKey.includes('ai') || typeKey.includes('model')) lat = latencies.ai_model;
+  
+  document.getElementById('inspectorLatency').innerText = lat;
+  modal.style.display = 'flex';
+}
+
+function closeNodeInspectorModal() {
+  const modal = document.getElementById('nodeInspectorModal');
+  if (modal) modal.style.display = 'none';
+}
+
 function renderNodeGraph(nodes, edges) {
+  globalGraphNodes = nodes || [];
+  globalGraphEdges = edges || [];
+
   const container = document.getElementById('nodeGraphContainer');
-  const svg = document.getElementById('nodeEdgesSvg');
-  
-  Array.from(container.children).forEach(c => { if(c.id !== 'nodeEdgesSvg') c.remove(); });
-  svg.innerHTML = `
-    <defs>
-      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(253, 224, 71, 0.8)"/>
-      </marker>
-    </defs>
-  `;
-  
   const width = container.clientWidth || 900;
   const height = container.clientHeight || 450;
-  
+
   const tierMap = { frontend: [], backend: [], data_ai: [] };
-  nodes.forEach(n => {
+  globalGraphNodes.forEach(n => {
     const t = (n.type || '').toLowerCase();
     if (t.includes('frontend')) tierMap.frontend.push(n);
     else if (t.includes('backend') || t.includes('api') || t.includes('gateway')) tierMap.backend.push(n);
     else tierMap.data_ai.push(n);
   });
-  
-  const positions = {};
+
+  nodePositions = {};
 
   const layoutTier = (nodeList, columnPct) => {
     const x = width * columnPct;
@@ -242,51 +269,52 @@ function renderNodeGraph(nodes, edges) {
     nodeList.forEach((n, idx) => {
       const step = height / (total + 1);
       const y = step * (idx + 1);
-      positions[n.id] = { x, y };
+      nodePositions[n.id] = { x, y };
     });
   };
 
-  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.18);
-  layoutTier(tierMap.backend.length ? tierMap.backend : [nodes[1] || nodes[0]], 0.50);
-  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.82);
+  layoutTier(tierMap.frontend.length ? tierMap.frontend : [globalGraphNodes[0]], 0.18);
+  layoutTier(tierMap.backend.length ? tierMap.backend : [globalGraphNodes[1] || globalGraphNodes[0]], 0.50);
+  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : globalGraphNodes.slice(2), 0.82);
 
-  nodes.forEach((n, i) => {
-    if (!positions[n.id]) {
-      positions[n.id] = { x: width * (0.2 + (i * 0.25) % 0.6), y: height * 0.5 };
+  globalGraphNodes.forEach((n, i) => {
+    if (!nodePositions[n.id]) {
+      nodePositions[n.id] = { x: width * (0.2 + (i * 0.25) % 0.6), y: height * 0.5 };
     }
   });
 
-  nodes.forEach((n) => {
-    const pos = positions[n.id];
-    const icon = getNodeIcon(n.type);
-    const typeClass = `node-type-${(n.type || 'backend').toLowerCase()}`;
-    
-    const div = document.createElement('div');
-    div.className = `tech-node ${typeClass}`;
-    div.style.left = `${pos.x - 70}px`;
-    div.style.top = `${pos.y - 35}px`;
-    div.title = `${n.label}: ${n.description || n.type}`;
-    div.innerHTML = `
-      <div class="tech-node-type">${icon} ${n.type || 'service'}</div>
-      <div style="font-weight:800; color:#FFF; font-size:0.9rem;">${n.label}</div>
-      <div class="tech-node-cost">${n.cost_estimate || '$50/mo'}</div>
-    `;
-    container.appendChild(div);
-  });
-  
-  edges.forEach(e => {
-    const s = positions[e.source];
-    const t = positions[e.target];
-    if(s && t) {
+  redrawNodeGraphDOM();
+}
+
+function redrawNodeGraphDOM() {
+  const container = document.getElementById('nodeGraphContainer');
+  const svg = document.getElementById('nodeEdgesSvg');
+  if (!container || !svg) return;
+
+  Array.from(container.children).forEach(c => { if (c.id !== 'nodeEdgesSvg') c.remove(); });
+
+  svg.innerHTML = `
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(253, 224, 71, 0.8)"/>
+      </marker>
+    </defs>
+  `;
+
+  // Render SVG Lines first
+  globalGraphEdges.forEach(e => {
+    const s = nodePositions[e.source];
+    const t = nodePositions[e.target];
+    if (s && t) {
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', s.x); line.setAttribute('y1', s.y);
       line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
       line.setAttribute('class', 'node-svg-line');
       line.setAttribute('marker-end', 'url(#arrow)');
       svg.appendChild(line);
-      
+
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('x', (s.x + t.x)/2); text.setAttribute('y', (s.y + t.y)/2 - 8);
+      text.setAttribute('x', (s.x + t.x) / 2); text.setAttribute('y', (s.y + t.y) / 2 - 8);
       text.setAttribute('fill', 'var(--shout-yellow)'); text.setAttribute('font-size', '10px');
       text.setAttribute('font-weight', 'bold');
       text.setAttribute('text-anchor', 'middle');
@@ -294,6 +322,145 @@ function renderNodeGraph(nodes, edges) {
       svg.appendChild(text);
     }
   });
+
+  // Render HTML Nodes
+  globalGraphNodes.forEach((n) => {
+    const pos = nodePositions[n.id] || { x: 100, y: 100 };
+    const icon = getNodeIcon(n.type);
+    const typeClass = `node-type-${(n.type || 'backend').toLowerCase()}`;
+
+    const div = document.createElement('div');
+    div.className = `tech-node ${typeClass}`;
+    div.id = `node-el-${n.id}`;
+    div.style.left = `${pos.x - 70}px`;
+    div.style.top = `${pos.y - 35}px`;
+    div.title = "Click to inspect details, drag to move node";
+
+    div.innerHTML = `
+      <div class="tech-node-type">${icon} ${n.type || 'service'}</div>
+      <div style="font-weight:800; color:#FFF; font-size:0.88rem; line-height:1.2;">${n.label}</div>
+      <div class="tech-node-cost">${n.cost_estimate || '$50/mo'}</div>
+    `;
+
+    // Click handler for modal inspect
+    div.addEventListener('click', (evt) => {
+      if (!div.dataset.dragged) {
+        inspectNode(n.id);
+      }
+      div.dataset.dragged = "";
+    });
+
+    // Mouse Drag handlers
+    div.addEventListener('mousedown', (e) => {
+      activeDraggedNode = n.id;
+      div.dataset.dragged = "";
+      const rect = container.getBoundingClientRect();
+      dragOffset.x = (e.clientX - rect.left) - pos.x;
+      dragOffset.y = (e.clientY - rect.top) - pos.y;
+      e.stopPropagation();
+    });
+
+    container.appendChild(div);
+  });
+}
+
+// Global Drag Mousemove Listener
+document.addEventListener('mousemove', (e) => {
+  if (!activeDraggedNode) return;
+  const container = document.getElementById('nodeGraphContainer');
+  if (!container) return;
+  const rect = container.getBoundingClientRect();
+
+  const newX = Math.max(70, Math.min(rect.width - 70, (e.clientX - rect.left) - dragOffset.x));
+  const newY = Math.max(35, Math.min(rect.height - 35, (e.clientY - rect.top) - dragOffset.y));
+
+  nodePositions[activeDraggedNode] = { x: newX, y: newY };
+  
+  const div = document.getElementById(`node-el-${activeDraggedNode}`);
+  if (div) {
+    div.style.left = `${newX - 70}px`;
+    div.style.top = `${newY - 35}px`;
+    div.dataset.dragged = "true";
+  }
+
+  // Update SVG Lines dynamically
+  redrawNodeGraphLines();
+});
+
+document.addEventListener('mouseup', () => {
+  activeDraggedNode = null;
+});
+
+function redrawNodeGraphLines() {
+  const svg = document.getElementById('nodeEdgesSvg');
+  if (!svg) return;
+  svg.innerHTML = `
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(253, 224, 71, 0.8)"/>
+      </marker>
+    </defs>
+  `;
+
+  globalGraphEdges.forEach(e => {
+    const s = nodePositions[e.source];
+    const t = nodePositions[e.target];
+    if (s && t) {
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', s.x); line.setAttribute('y1', s.y);
+      line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
+      line.setAttribute('class', 'node-svg-line');
+      line.setAttribute('marker-end', 'url(#arrow)');
+      svg.appendChild(line);
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', (s.x + t.x) / 2); text.setAttribute('y', (s.y + t.y) / 2 - 8);
+      text.setAttribute('fill', 'var(--shout-yellow)'); text.setAttribute('font-size', '10px');
+      text.setAttribute('font-weight', 'bold');
+      text.setAttribute('text-anchor', 'middle');
+      text.textContent = e.label;
+      svg.appendChild(text);
+    }
+  });
+}
+
+function filterArchitectureNodes(category, btnEl) {
+  document.querySelectorAll('.node-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  globalGraphNodes.forEach(n => {
+    const div = document.getElementById(`node-el-${n.id}`);
+    if (!div) return;
+    const t = (n.type || '').toLowerCase();
+    
+    if (category === 'all') {
+      div.style.opacity = '1';
+      div.style.filter = 'none';
+    } else if (category === 'frontend' && t.includes('frontend')) {
+      div.style.opacity = '1'; div.style.filter = 'none';
+    } else if (category === 'backend' && (t.includes('backend') || t.includes('api'))) {
+      div.style.opacity = '1'; div.style.filter = 'none';
+    } else if (category === 'data_ai' && (t.includes('database') || t.includes('storage') || t.includes('ai') || t.includes('model') || t.includes('vector'))) {
+      div.style.opacity = '1'; div.style.filter = 'none';
+    } else {
+      div.style.opacity = '0.25';
+      div.style.filter = 'grayscale(100%)';
+    }
+  });
+}
+
+function simulateDataflowPing() {
+  const nodes = document.querySelectorAll('.tech-node');
+  nodes.forEach((n, idx) => {
+    setTimeout(() => {
+      n.classList.add('pinging');
+      setTimeout(() => n.classList.remove('pinging'), 1200);
+    }, idx * 150);
+  });
+}
+
+function resetNodeLayout() {
+  renderNodeGraph(globalGraphNodes, globalGraphEdges);
 }
 
 // --- TERMINAL AGENT CHAT (STREAMING & NO ASTERISKS) ---
