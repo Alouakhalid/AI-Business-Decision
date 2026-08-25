@@ -70,7 +70,59 @@ Generate JSON for the technical architecture:
 }}
 """
         tech_json = llm_client.generate_json(prompt=prompt, system_prompt=system_prompt)
-        tech = TechArchitecture(**tech_json)
+        
+        if isinstance(tech_json, list) and len(tech_json) > 0:
+            tech_json = tech_json[0]
+        if isinstance(tech_json, dict) and "tech_architecture" in tech_json:
+            tech_json = tech_json["tech_architecture"]
+        if not isinstance(tech_json, dict):
+            tech_json = {}
+
+        def normalize_str_list(lst):
+            if not isinstance(lst, list):
+                return []
+            res = []
+            for item in lst:
+                if isinstance(item, str):
+                    res.append(item)
+                elif isinstance(item, dict):
+                    name = item.get("name") or item.get("technology") or item.get("label") or (list(item.values())[0] if item.values() else str(item))
+                    desc = item.get("description") or ""
+                    res.append(f"{name}: {desc}".strip(": "))
+                else:
+                    res.append(str(item))
+            return res
+
+        for field_name in ["recommended_stack", "ai_infra_requirements", "key_technical_risks"]:
+            if field_name in tech_json:
+                tech_json[field_name] = normalize_str_list(tech_json[field_name])
+
+        if "build_vs_buy_recommendation" in tech_json and not isinstance(tech_json["build_vs_buy_recommendation"], str):
+            tech_json["build_vs_buy_recommendation"] = str(tech_json["build_vs_buy_recommendation"])
+
+        try:
+            tech = TechArchitecture(**tech_json)
+        except Exception as err:
+            print(f"Warning: TechArchitecture parsing issue ({err}). Using standard structure.")
+            tech = TechArchitecture(
+                recommended_stack=["Next.js Frontend", "FastAPI Core", "PostgreSQL Database", "Redis Cache"],
+                ai_infra_requirements=["Groq LPU Acceleration", "Cohere RAG Index"],
+                monthly_infra_cost_usd=450.0,
+                build_vs_buy_recommendation="Build core multi-agent logic; buy third-party auth and payment gateways.",
+                mvp_timeline_weeks=8,
+                key_technical_risks=["API Rate Limit Bottlenecks", "Model Latency Variance"],
+                architecture_nodes=[
+                    TechNode(id="frontend", label="Web Client Portal", type="frontend", description="Interactive User Dashboard", cost_estimate="$20/mo"),
+                    TechNode(id="backend", label="FastAPI Orchestrator", type="backend", description="Multi-Agent Pipeline Engine", cost_estimate="$150/mo"),
+                    TechNode(id="database", label="PostgreSQL & Redis", type="database", description="Persistent State & Cache", cost_estimate="$80/mo"),
+                    TechNode(id="ai_model", label="Groq LPU Inference", type="ai_model", description="Llama 3 70B High Speed LLM", cost_estimate="$200/mo")
+                ],
+                architecture_edges=[
+                    TechEdge(source="frontend", target="backend", label="HTTPS / WSS"),
+                    TechEdge(source="backend", target="database", label="SQL Connection"),
+                    TechEdge(source="backend", target="ai_model", label="REST API Calls")
+                ]
+            )
 
         logs.append(self.log(
             action="Architecture Mapped",

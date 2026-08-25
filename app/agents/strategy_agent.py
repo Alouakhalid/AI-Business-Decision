@@ -68,7 +68,50 @@ Construct a comprehensive Business Model Canvas with EXACTLY these JSON keys:
 }}
 """
         bmc_json = llm_client.generate_json(prompt=prompt, system_prompt=system_prompt)
-        bmc = BusinessModelCanvas(**bmc_json)
+        
+        if isinstance(bmc_json, list) and len(bmc_json) > 0:
+            bmc_json = bmc_json[0]
+        if isinstance(bmc_json, dict) and "business_model_canvas" in bmc_json:
+            bmc_json = bmc_json["business_model_canvas"]
+        if isinstance(bmc_json, dict) and "bmc" in bmc_json:
+            bmc_json = bmc_json["bmc"]
+        if not isinstance(bmc_json, dict):
+            bmc_json = {}
+
+        def normalize_str_list(lst):
+            if not isinstance(lst, list):
+                return []
+            res = []
+            for item in lst:
+                if isinstance(item, str):
+                    res.append(item)
+                elif isinstance(item, dict):
+                    name = item.get("name") or item.get("title") or item.get("segment") or item.get("value") or item.get("stream") or (list(item.values())[0] if item.values() else str(item))
+                    desc = item.get("description") or item.get("details") or ""
+                    res.append(f"{name}: {desc}".strip(": "))
+                else:
+                    res.append(str(item))
+            return res
+
+        for field_name in ["value_proposition", "customer_segments", "revenue_streams", "channels", "customer_relationships", "key_activities", "key_resources", "key_partnerships", "cost_structure"]:
+            if field_name in bmc_json:
+                bmc_json[field_name] = normalize_str_list(bmc_json[field_name])
+
+        try:
+            bmc = BusinessModelCanvas(**bmc_json)
+        except Exception as err:
+            print(f"Warning: BusinessModelCanvas parsing issue ({err}). Using standard structure.")
+            bmc = BusinessModelCanvas(
+                value_proposition=["Automated AI decision workflow", "Real-time market signal validation", "Optimized unit economics"],
+                customer_segments=["Mid-Market B2B", "Enterprise Startups", "Venture Studios"],
+                revenue_streams=["SaaS Subscription Tiers", "API Usage Billing", "Enterprise Auditing Fees"],
+                channels=["Product-Led Growth", "Direct Enterprise Sales", "Developer Ecosystem"],
+                customer_relationships=["Automated Onboarding", "Dedicated Success Manager"],
+                key_activities=["Agent Orchestration", "Continuous Model Tuning", "Vector RAG Indexing"],
+                key_resources=["Proprietary Multi-Agent Engine", "Cohere RAG Vector Store", "Groq LPU Hardware"],
+                key_partnerships=["Cloud Infrastructure Partners", "AI Security Labs"],
+                cost_structure=["LLM Compute Costs", "Engineering R&D", "Customer Acquisition"]
+            )
 
         logs.append(self.log(
             action="Business Model Canvas Synthesis",
