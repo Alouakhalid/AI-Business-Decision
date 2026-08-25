@@ -3,8 +3,63 @@ let currentReport = null;
 let financialChartInstance = null;
 let currentSlideIndex = 0;
 
+const demoReport = {
+  project_title: "AI B2B Contract Risk Auditor & Compliance Engine",
+  executive_summary: "Automated legal technology platform leveraging multi-agent AI and vector RAG store to perform real-time contract auditing, automated redlining, and clause risk scoring for enterprise legal teams.",
+  viability_score: 91.5,
+  business_model_canvas: {
+    key_partnerships: ["Enterprise CLM Vendors", "Cloud Infrastructure Providers", "Legal Compliance Auditors"],
+    key_activities: ["Automated Clause Analysis", "Vector RAG Indexing", "Continuous Security Compliance"],
+    value_proposition: ["80% Reduction in Review Time", "Instant Clause Redlining", "Enterprise Audit Security"],
+    customer_relationships: ["Dedicated Account Managers", "Self-Serve Developer Portal"],
+    customer_segments: ["Fortune 500 Legal Teams", "Mid-Market Corporate Counsel", "High-Growth Tech Startups"],
+    key_resources: ["Proprietary Multi-Agent Engine", "Cohere RAG Knowledge Base", "Groq LPU Hardware"],
+    channels: ["Direct B2B Enterprise Sales", "Developer Community", "Targeted LinkedIn Campaigns"],
+    cost_structure: ["LLM API Compute", "Enterprise Security R&D", "Sales & Customer Acquisition"],
+    revenue_streams: ["Annual Enterprise SaaS Tiers", "API Usage Metering", "Custom Integration Services"]
+  },
+  monte_carlo: {
+    probability_of_profitability: 84.2,
+    expected_year3_revenue: 4200000,
+    var_95_downside_risk: -145000,
+    cfo_summary: "CFO Audit: 1,000 Monte Carlo trials confirm 84.2% probability of profitability within 18 months."
+  },
+  financials: {
+    annual_revenue: { year1: 280000, year2: 1100000, year3: 4200000 },
+    operating_expenses: { year1: 160000, year2: 450000, year3: 1200000 }
+  },
+  tech_architecture: {
+    architecture_nodes: [
+      { id: "node-1", label: "Web Portal Client", type: "frontend", cost_estimate: "$25/mo", description: "Responsive Single Page Application" },
+      { id: "node-2", label: "FastAPI Gateway", type: "backend", cost_estimate: "$90/mo", description: "Async REST & WebSocket Gateway" },
+      { id: "node-3", label: "Vector RAG Base", type: "database", cost_estimate: "$75/mo", description: "Cohere Vector Store Index" },
+      { id: "node-4", label: "Groq LPU Engine", type: "ai_model", cost_estimate: "$200/mo", description: "6-Agent Inference Swarm" }
+    ],
+    architecture_edges: [
+      { source: "node-1", target: "node-2", label: "HTTPS / REST" },
+      { source: "node-2", target: "node-3", label: "Vector Search" },
+      { source: "node-2", target: "node-4", label: "Groq LPU Inference" }
+    ]
+  },
+  gtm_assets: {
+    tagline: "Autonomous AI Contract Auditing for Enterprise Legal Teams",
+    target_audience: "General Counsels, Enterprise Procurement, SaaS Founders",
+    sdk_python_snippet: "import decisionos\nclient = decisionos.Client()\nreport = client.analyze('B2B Legal AI')"
+  },
+  risk_assessment: {
+    critical_vulnerabilities: [
+      { vulnerability: "High Enterprise CAC and extended 6-month sales cycles", severity: "HIGH" },
+      { vulnerability: "LLM API Rate Limits & Cloud Vendor Lock-in", severity: "CRITICAL" }
+    ]
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   checkApiHealth();
+  currentReport = demoReport;
+  renderResults(demoReport);
+  const resultsEl = document.getElementById('dashboardResults');
+  if (resultsEl) resultsEl.style.display = 'block';
 });
 
 async function checkApiHealth() {
