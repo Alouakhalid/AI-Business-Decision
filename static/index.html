@@ -271,9 +271,19 @@
           Submit your strategic counter-defense against identified Red Team vulnerability threats. The AI auditor will score your defense (0-100)!
         </p>
         <div style="margin-top: 1rem;">
-          <select id="challengeVulnSelect" class="control-select" style="width: 100%; margin-top: 0.4rem; background: #000; color: #FFF; border-color: var(--accent-rose);"></select>
+          <select id="challengeVulnSelect" class="control-select" style="width: 100%; margin-top: 0.4rem; background: #000; color: #FFF; border-color: var(--accent-rose);">
+            <option value="High Customer Acquisition Cost (CAC) erosion and aggressive price slicing from incumbents">
+              [HIGH] High CAC Erosion & Aggressive Competitor Pricing Attack
+            </option>
+            <option value="API rate limit vulnerabilities and dependency vendor lock-in risks">
+              [CRITICAL] LLM Vendor Dependency & API Rate Limit Vulnerability
+            </option>
+            <option value="Data privacy leak risks in automated web ingestion pipeline">
+              [MEDIUM] Data Privacy & Scraping Compliance Vulnerability
+            </option>
+          </select>
         </div>
-        <textarea id="userDefenseInput" class="challenger-textarea" placeholder="Describe your counter-defense strategy..."></textarea>
+        <textarea id="userDefenseInput" class="challenger-textarea" placeholder="Describe your counter-defense strategy (e.g. We enforce 1-year enterprise contracts and automated workflow integrations to increase switching costs)..."></textarea>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <button id="submitDefenseBtn" class="btn-cta-pill" style="background: var(--accent-rose); border-color: var(--accent-rose); color: #FFF;" onclick="submitRedTeamDefense()">
             <i class="fa-solid fa-gavel"></i> Submit Counter-Defense
@@ -284,7 +294,7 @@
             <span style="font-weight: 800; font-size: 1.1rem; color: var(--accent-rose);">Auditor Verdict: <span id="defenseVerdict">ACCEPTED</span></span>
             <span class="score-badge-glass" style="padding: 0.4rem 1rem; font-size: 1.1rem;" id="defenseScoreBadge">88/100</span>
           </div>
-          <p id="defenseCritique" style="font-size: 0.9rem; color: var(--text-muted-dark); line-height: 1.5;"></p>
+          <div id="defenseCritique" style="font-size: 0.9rem; color: var(--text-muted-dark); line-height: 1.5;"></div>
         </div>
       </div>
 
@@ -377,6 +387,6 @@
     </div>
   </div>
 
-  <script src="/static/js/app.js"></script>
+  <script src="/static/js/app.js?v=5.2"></script>
 </body>
 </html>
