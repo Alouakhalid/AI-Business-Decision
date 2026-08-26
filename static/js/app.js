@@ -353,7 +353,7 @@ function renderNodeGraph(nodes, edges) {
   `;
 
   const width = container.clientWidth || 900;
-  const height = container.clientHeight || 480;
+  const height = container.clientHeight || 540;
 
   const tierMap = { frontend: [], backend: [], data_ai: [] };
   nodes.forEach(n => {
@@ -366,22 +366,22 @@ function renderNodeGraph(nodes, edges) {
   const positions = {};
 
   const layoutTier = (nodeList, columnPct) => {
-    const x = Math.max(100, Math.min(width - 100, width * columnPct));
+    const x = Math.max(120, Math.min(width - 120, width * columnPct));
     const total = nodeList.length;
     nodeList.forEach((n, idx) => {
-      const step = height / (total + 1);
-      const y = step * (idx + 1);
+      const step = (height - 80) / (total + 1);
+      const y = 40 + step * (idx + 1);
       positions[n.id] = { x, y };
     });
   };
 
-  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.22);
+  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.20);
   layoutTier(tierMap.backend.length ? tierMap.backend : [nodes[1] || nodes[0]], 0.50);
-  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.78);
+  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.80);
 
   nodes.forEach((n, i) => {
     if (!positions[n.id]) {
-      positions[n.id] = { x: Math.max(100, Math.min(width - 100, width * (0.25 + (i * 0.25) % 0.5))), y: height * 0.5 };
+      positions[n.id] = { x: Math.max(120, Math.min(width - 120, width * (0.25 + (i * 0.25) % 0.5))), y: height * 0.5 };
     }
   });
 
@@ -412,12 +412,12 @@ function renderNodeGraph(nodes, edges) {
       const dx = t.x - s.x;
       const dy = t.y - s.y;
       const cx = (s.x + t.x) / 2;
-      const cy = (s.y + t.y) / 2 - (dx * 0.15); // Smooth quadratic curve control point
+      const cy = (s.y + t.y) / 2 - Math.min(45, Math.abs(dx) * 0.12); // Smooth quadratic curve control point
       const d = `M ${s.x} ${s.y} Q ${cx} ${cy} ${t.x} ${t.y}`;
       
       path.setAttribute('d', d);
       path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', 'rgba(253, 224, 71, 0.7)');
+      path.setAttribute('stroke', 'rgba(253, 224, 71, 0.75)');
       path.setAttribute('stroke-width', '2.5');
       path.setAttribute('stroke-dasharray', '6,6');
       path.setAttribute('class', 'node-svg-line');
