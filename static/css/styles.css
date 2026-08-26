@@ -497,14 +497,15 @@ body {
 /* ENHANCED CTO NODE GRAPH STYLES */
 .node-graph-container {
   width: 100%;
-  min-height: 450px;
-  background: radial-gradient(circle at center, rgba(30, 30, 30, 0.8), rgba(10, 10, 10, 0.95));
+  min-height: 480px;
+  background: radial-gradient(circle at center, rgba(30, 30, 30, 0.9), rgba(10, 10, 10, 0.98));
   border-radius: var(--radius-card);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(253, 224, 71, 0.25);
+  border: 2px solid rgba(253, 224, 71, 0.4);
   margin-bottom: 2rem;
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9);
+  padding: 2rem;
 }
 
 .tech-node {
