@@ -684,7 +684,7 @@ body {
 
 .bmc-grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
@@ -693,7 +693,7 @@ body {
   backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-card);
-  padding: 1.5rem;
+  padding: 1.75rem;
   transition: all 0.3s ease;
 }
 
@@ -703,7 +703,7 @@ body {
 }
 
 .bmc-card-title {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--shout-yellow);
   margin-bottom: 1rem;
@@ -720,11 +720,11 @@ body {
 }
 
 .bmc-bullet-item {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: var(--text-muted-dark);
   padding-left: 1.25rem;
   position: relative;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .bmc-bullet-item::before {
@@ -737,8 +737,8 @@ body {
 
 .charts-two-col {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 2rem;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
   margin-bottom: 2rem;
 }
 
