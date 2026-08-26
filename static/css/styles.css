@@ -498,50 +498,96 @@ body {
 /* ENHANCED CTO NODE GRAPH STYLES */
 .node-graph-container {
   width: 100%;
-  min-height: 800px;
-  background: radial-gradient(circle at center, rgba(30, 30, 30, 0.95), rgba(10, 10, 10, 0.98));
+  min-height: 720px;
+  background: 
+    linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(5, 10, 20, 0.98)),
+    linear-gradient(rgba(253, 224, 71, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(253, 224, 71, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
   border-radius: var(--radius-card);
   position: relative;
   overflow: visible;
-  border: 2px solid rgba(253, 224, 71, 0.5);
-  margin: 3rem 0;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 0 50px rgba(0, 0, 0, 0.9);
-  padding: 4rem;
+  border: 2px solid rgba(253, 224, 71, 0.4);
+  margin: 2rem 0;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(253, 224, 71, 0.15), inset 0 0 80px rgba(0, 0, 0, 0.9);
+  padding: 3.5rem 2rem 2.5rem 2rem;
+}
+
+.architecture-lanes-header {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none;
+  z-index: 1;
+  padding: 0 1rem;
+}
+
+.arch-lane-badge {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.arch-lane-badge.lane-frontend {
+  color: var(--accent-cyan);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+.arch-lane-badge.lane-backend {
+  color: var(--shout-yellow);
+  border-color: rgba(253, 224, 71, 0.4);
+}
+
+.arch-lane-badge.lane-data {
+  color: #A855F7;
+  border-color: rgba(168, 85, 247, 0.4);
 }
 
 .tech-node {
   position: absolute;
-  background: rgba(23, 23, 23, 0.95);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(135deg, rgba(20, 24, 33, 0.95), rgba(10, 12, 18, 0.98));
+  backdrop-filter: blur(16px);
   border: 2px solid var(--shout-yellow);
   color: #FFF;
-  padding: 0.85rem 1.2rem;
-  border-radius: 18px;
+  padding: 0.9rem 1.25rem;
+  border-radius: 16px;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 700;
-  text-align: center;
-  min-width: 140px;
-  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 2;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  min-width: 165px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 5;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .tech-node:hover {
-  transform: scale(1.1) translateY(-4px);
-  z-index: 10;
-  box-shadow: 0 15px 35px rgba(253, 224, 71, 0.3);
+  transform: scale(1.08) translateY(-6px);
+  z-index: 20;
+  box-shadow: 0 20px 45px rgba(253, 224, 71, 0.35), 0 0 20px var(--shout-yellow);
 }
 
 .tech-node.node-type-frontend {
   border-color: var(--accent-cyan);
 }
-
+.tech-node.node-type-frontend:hover {
+  box-shadow: 0 20px 45px rgba(6, 182, 212, 0.35), 0 0 20px var(--accent-cyan);
+}
 .tech-node.node-type-frontend .tech-node-type {
   color: var(--accent-cyan);
 }
@@ -549,7 +595,6 @@ body {
 .tech-node.node-type-backend {
   border-color: var(--shout-yellow);
 }
-
 .tech-node.node-type-backend .tech-node-type {
   color: var(--shout-yellow);
 }
@@ -557,7 +602,9 @@ body {
 .tech-node.node-type-database {
   border-color: var(--accent-emerald);
 }
-
+.tech-node.node-type-database:hover {
+  box-shadow: 0 20px 45px rgba(16, 185, 129, 0.35), 0 0 20px var(--accent-emerald);
+}
 .tech-node.node-type-database .tech-node-type {
   color: var(--accent-emerald);
 }
@@ -565,7 +612,9 @@ body {
 .tech-node.node-type-ai_model {
   border-color: #A855F7;
 }
-
+.tech-node.node-type-ai_model:hover {
+  box-shadow: 0 20px 45px rgba(168, 85, 247, 0.35), 0 0 20px #A855F7;
+}
 .tech-node.node-type-ai_model .tech-node-type {
   color: #A855F7;
 }
@@ -573,46 +622,90 @@ body {
 .tech-node.node-type-cache {
   border-color: #EC4899;
 }
-
+.tech-node.node-type-cache:hover {
+  box-shadow: 0 20px 45px rgba(236, 72, 153, 0.35), 0 0 20px #EC4899;
+}
 .tech-node.node-type-cache .tech-node-type {
   color: #EC4899;
 }
 
+.tech-node-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .tech-node-type {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   display: flex;
   align-items: center;
   gap: 0.35rem;
 }
 
+.status-dot-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 10px #10B981;
+  animation: pulseGlow 1.8s infinite;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); box-shadow: 0 0 4px #10B981; }
+  50% { transform: scale(1.2); box-shadow: 0 0 12px #10B981; }
+  100% { transform: scale(0.95); box-shadow: 0 0 4px #10B981; }
+}
+
+.tech-node-title {
+  font-weight: 800;
+  color: #FFF;
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
+}
+
+.tech-node-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.2rem;
+}
+
 .tech-node-cost {
   font-size: 0.7rem;
   font-family: var(--font-mono);
-  color: rgba(255, 255, 255, 0.7);
-  background: rgba(0, 0, 0, 0.5);
-  padding: 0.15rem 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.15rem 0.55rem;
   border-radius: 999px;
-  margin-top: 0.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tech-node-ping {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--shout-yellow);
 }
 
 @keyframes dashFlow {
   from {
-    stroke-dashoffset: 24;
+    stroke-dashoffset: 30;
   }
-
   to {
     stroke-dashoffset: 0;
   }
 }
 
 .node-svg-line {
-  stroke: rgba(253, 224, 71, 0.6);
-  stroke-width: 2.5;
-  stroke-dasharray: 6, 6;
-  animation: dashFlow 1.5s linear infinite;
+  stroke: rgba(253, 224, 71, 0.85);
+  stroke-width: 2.8;
+  stroke-dasharray: 8, 8;
+  animation: dashFlow 1.2s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(253, 224, 71, 0.6));
 }
 
 /* TERMINAL */

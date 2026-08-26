@@ -341,23 +341,30 @@ function renderNodeGraph(nodes, edges) {
   const container = document.getElementById('nodeGraphContainer');
   const svg = document.getElementById('nodeEdgesSvg');
 
-  Array.from(container.children).forEach(c => { if (c.id !== 'nodeEdgesSvg') c.remove(); });
+  Array.from(container.children).forEach(c => { 
+    if (c.id !== 'nodeEdgesSvg' && !c.classList.contains('architecture-lanes-header')) c.remove(); 
+  });
+
   svg.innerHTML = `
     <defs>
-      <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(253, 224, 71, 0.8)"/>
+      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+      <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#FDE047"/>
       </marker>
     </defs>
   `;
 
-  const width = container.clientWidth || 900;
-  const height = container.clientHeight || 800;
+  const width = container.clientWidth || 950;
+  const height = container.clientHeight || 720;
 
   const tierMap = { frontend: [], backend: [], data_ai: [] };
   nodes.forEach(n => {
     const t = (n.type || '').toLowerCase();
-    if (t.includes('frontend')) tierMap.frontend.push(n);
-    else if (t.includes('backend') || t.includes('api') || t.includes('gateway')) tierMap.backend.push(n);
+    if (t.includes('frontend') || t.includes('client') || t.includes('ui')) tierMap.frontend.push(n);
+    else if (t.includes('backend') || t.includes('api') || t.includes('gateway') || t.includes('cache')) tierMap.backend.push(n);
     else tierMap.data_ai.push(n);
   });
 
@@ -367,19 +374,19 @@ function renderNodeGraph(nodes, edges) {
     const x = Math.max(140, Math.min(width - 140, width * columnPct));
     const total = nodeList.length;
     nodeList.forEach((n, idx) => {
-      const step = (height - 120) / (total + 1);
-      const y = 60 + step * (idx + 1);
+      const step = (height - 140) / (total + 1);
+      const y = 80 + step * (idx + 1);
       positions[n.id] = { x, y };
     });
   };
 
-  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.15);
+  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.18);
   layoutTier(tierMap.backend.length ? tierMap.backend : [nodes[1] || nodes[0]], 0.50);
-  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.80);
+  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.82);
 
   nodes.forEach((n, i) => {
     if (!positions[n.id]) {
-      positions[n.id] = { x: Math.max(120, Math.min(width - 120, width * (0.25 + (i * 0.25) % 0.5))), y: height * 0.5 };
+      positions[n.id] = { x: Math.max(140, Math.min(width - 140, width * (0.25 + (i * 0.25) % 0.5))), y: height * 0.5 };
     }
   });
 
@@ -387,16 +394,25 @@ function renderNodeGraph(nodes, edges) {
     const pos = positions[n.id];
     const icon = getNodeIcon(n.type);
     const typeClass = `node-type-${(n.type || 'backend').toLowerCase()}`;
+    const pingMs = Math.floor(Math.random() * 15) + 4;
 
     const div = document.createElement('div');
     div.className = `tech-node ${typeClass}`;
-    div.style.left = `${pos.x - 70}px`;
-    div.style.top = `${pos.y - 35}px`;
+    div.style.left = `${pos.x - 85}px`;
+    div.style.top = `${pos.y - 45}px`;
     div.title = `${n.label}: ${n.description || n.type}`;
+    div.onclick = () => openNodeInspectorModal(n);
+
     div.innerHTML = `
-      <div class="tech-node-type">${icon} ${n.type || 'service'}</div>
-      <div style="font-weight:800; color:#FFF; font-size:0.9rem;">${n.label}</div>
-      <div class="tech-node-cost">${n.cost_estimate || '$50/mo'}</div>
+      <div class="tech-node-header-row">
+        <div class="tech-node-type">${icon} ${n.type || 'service'}</div>
+        <div class="status-dot-pulse" title="System Status: Online"></div>
+      </div>
+      <div class="tech-node-title">${n.label}</div>
+      <div class="tech-node-footer-row">
+        <span class="tech-node-cost">${n.cost_estimate || '~$40/mo'}</span>
+        <span class="tech-node-ping"><i class="fa-solid fa-bolt"></i> ${pingMs}ms</span>
+      </div>
     `;
     container.appendChild(div);
   });
@@ -409,22 +425,21 @@ function renderNodeGraph(nodes, edges) {
       const dx = t.x - s.x;
       const dy = t.y - s.y;
       const cx = (s.x + t.x) / 2;
-      const cy = (s.y + t.y) / 2 - Math.min(45, Math.abs(dx) * 0.12);
+      const cy = (s.y + t.y) / 2 - Math.min(50, Math.abs(dx) * 0.14);
       const d = `M ${s.x} ${s.y} Q ${cx} ${cy} ${t.x} ${t.y}`;
       
       path.setAttribute('d', d);
       path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', 'rgba(253, 224, 71, 0.75)');
-      path.setAttribute('stroke-width', '2.5');
-      path.setAttribute('stroke-dasharray', '6,6');
       path.setAttribute('class', 'node-svg-line');
       path.setAttribute('marker-end', 'url(#arrow)');
+      path.setAttribute('filter', 'url(#glow)');
       svg.appendChild(path);
 
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', cx);
       text.setAttribute('y', cy - 8);
-      text.setAttribute('fill', '#FDE047'); text.setAttribute('font-size', '10px');
+      text.setAttribute('fill', '#FDE047');
+      text.setAttribute('font-size', '10px');
       text.setAttribute('font-weight', 'bold');
       text.setAttribute('text-anchor', 'middle');
       text.textContent = e.label;

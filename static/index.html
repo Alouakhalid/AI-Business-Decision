@@ -372,6 +372,11 @@ print("Viability Score:", report.viability_score)</pre>
       </div>
 
       <div id="nodeGraphContainer" class="node-graph-container">
+        <div class="architecture-lanes-header">
+          <div class="arch-lane-badge lane-frontend"><i class="fa-solid fa-laptop-code"></i> Frontend / Client Tier</div>
+          <div class="arch-lane-badge lane-backend"><i class="fa-solid fa-server"></i> API Gateway & Microservices</div>
+          <div class="arch-lane-badge lane-data"><i class="fa-solid fa-brain"></i> AI Engines & Data Mesh</div>
+        </div>
         <!-- Nodes injected via JS -->
         <svg id="nodeEdgesSvg"
           style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></svg>
@@ -653,7 +658,7 @@ print("Viability Score:", report.viability_score)</pre>
     </div>
   </div>
 
-  <script src="/static/js/app.js?v=110.0"></script>
+  <script src="/static/js/app.js?v=120.0"></script>
 </body>
 
 </html>
