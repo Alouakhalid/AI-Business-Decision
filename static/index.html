@@ -314,22 +314,22 @@
     </div>
 
     <!-- 3. GTM MARKETING & EXECUTION ASSETS (CMO) -->
-    <div class="chart-glass-card" style="margin-top: 2rem; margin-bottom: 2rem;">
+    <div class="chart-glass-card">
       <div class="console-header-flex">
         <h2 class="section-headline">
           <i class="fa-solid fa-bullseye" style="color: #EC4899;"></i> GTM Marketing & Execution Assets (CMO Strategy)
         </h2>
         <span class="brand-pill" style="background: rgba(236, 72, 153, 0.2); color: #EC4899;">GTM Launch Pack</span>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <div style="background: rgba(0,0,0,0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
-          <h3 style="font-size: 0.95rem; color: var(--shout-yellow); font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;"><i class="fa-solid fa-rocket"></i> Product Hunt Tagline & Description</h3>
-          <div id="gtmTagline" style="font-weight: 900; font-size: 1.1rem; color: #FFF; margin-bottom: 0.4rem;">Autonomous Business Strategy Engine</div>
-          <div id="gtmDescription" style="font-size: 0.9rem; color: var(--text-muted-dark); line-height: 1.6;">Deploy an autonomous 6-agent boardroom to simulate venture blueprints instantly.</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div style="background: rgba(0,0,0,0.6); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+          <h3 style="font-size: 0.9rem; color: var(--shout-yellow); font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;"><i class="fa-solid fa-rocket"></i> Product Hunt Tagline & Description</h3>
+          <div id="gtmTagline" style="font-weight: 900; font-size: 1rem; color: #FFF; margin-bottom: 0.4rem;">Autonomous Business Strategy Engine</div>
+          <div id="gtmDescription" style="font-size: 0.85rem; color: var(--text-muted-dark); line-height: 1.5;">Deploy an autonomous 6-agent boardroom to simulate venture blueprints instantly.</div>
         </div>
-        <div style="background: rgba(0,0,0,0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
-          <h3 style="font-size: 0.95rem; color: var(--shout-yellow); font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;"><i class="fa-solid fa-code"></i> Python SDK Integration Snippet</h3>
-          <pre id="gtmCodeSnippet" style="background: #000; padding: 1rem; border-radius: 12px; font-size: 0.85rem; color: #34D399; font-family: var(--font-mono); overflow-x: auto; border: 1px solid rgba(52, 211, 153, 0.3);">import decisionos
+        <div style="background: rgba(0,0,0,0.6); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+          <h3 style="font-size: 0.9rem; color: var(--shout-yellow); font-weight: 800; text-transform: uppercase; margin-bottom: 0.6rem;"><i class="fa-solid fa-code"></i> Python SDK Integration Snippet</h3>
+          <pre id="gtmCodeSnippet" style="background: #000; padding: 0.8rem; border-radius: 12px; font-size: 0.8rem; color: #34D399; font-family: var(--font-mono); overflow-x: auto; border: 1px solid rgba(52, 211, 153, 0.3);">import decisionos
 client = decisionos.Client(api_key="gsk_...")
 report = client.analyze(idea="B2B AI Legal Auditor")
 print("Viability Score:", report.viability_score)</pre>
@@ -337,7 +337,46 @@ print("Viability Score:", report.viability_score)</pre>
       </div>
     </div>
 
+    <!-- NEW: INTERACTIVE NODE ARCHITECTURE GRAPH -->
+    <div class="chart-glass-card">
+      <div class="console-header-flex">
+        <h2 class="section-headline">
+          <i class="fa-solid fa-diagram-project" style="color: var(--shout-yellow);"></i> Interactive System
+          Architecture (CTO)
+        </h2>
+        <span class="brand-pill" style="background: rgba(168, 85, 247, 0.2); color: #A855F7;">
+          Node-Based Topology
+        </span>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted-dark); margin-bottom: 0.75rem;">
+        Drag nodes to reposition topology. Click any node to open technical metrics inspector.
+      </p>
 
+      <div class="node-graph-toolbar"
+        style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="node-filter-btn active" onclick="filterArchitectureNodes('all', this)">All Nodes</button>
+          <button class="node-filter-btn" onclick="filterArchitectureNodes('frontend', this)">Frontend</button>
+          <button class="node-filter-btn" onclick="filterArchitectureNodes('backend', this)">Backend</button>
+          <button class="node-filter-btn" onclick="filterArchitectureNodes('data_ai', this)">AI & Data</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-admin-pill" onclick="simulateDataflowPing()"
+            style="padding: 0.4rem 0.9rem; font-size: 0.8rem;">
+            <i class="fa-solid fa-bolt" style="color: var(--shout-yellow);"></i> Simulate Ping
+          </button>
+          <button class="btn-admin-pill" onclick="resetNodeLayout()" style="padding: 0.4rem 0.9rem; font-size: 0.8rem;">
+            <i class="fa-solid fa-rotate-left"></i> Reset Layout
+          </button>
+        </div>
+      </div>
+
+      <div id="nodeGraphContainer" class="node-graph-container">
+        <!-- Nodes injected via JS -->
+        <svg id="nodeEdgesSvg"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></svg>
+      </div>
+    </div>
 
     <!-- INTERACTIVE EDITABLE SPREADSHEET FINANCIAL TABLE & CSV EXPORTER -->
     <div class="chart-glass-card">
@@ -614,7 +653,7 @@ print("Viability Score:", report.viability_score)</pre>
     </div>
   </div>
 
-  <script src="/static/js/app.js?v=50.0"></script>
+  <script src="/static/js/app.js?v=99.0"></script>
 </body>
 
 </html>

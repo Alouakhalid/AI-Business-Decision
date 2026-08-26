@@ -497,15 +497,14 @@ body {
 /* ENHANCED CTO NODE GRAPH STYLES */
 .node-graph-container {
   width: 100%;
-  min-height: 540px;
-  background: radial-gradient(circle at center, rgba(30, 30, 30, 0.95), rgba(10, 10, 10, 0.98));
+  min-height: 450px;
+  background: radial-gradient(circle at center, rgba(30, 30, 30, 0.8), rgba(10, 10, 10, 0.95));
   border-radius: var(--radius-card);
   position: relative;
-  overflow: visible;
-  border: 2px solid rgba(253, 224, 71, 0.5);
-  margin: 2rem 0;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 0 50px rgba(0, 0, 0, 0.9);
-  padding: 2.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(253, 224, 71, 0.25);
+  margin-bottom: 2rem;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
 }
 
 .tech-node {
@@ -685,7 +684,7 @@ body {
 
 .bmc-grid-container {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
 
@@ -694,7 +693,7 @@ body {
   backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-card);
-  padding: 1.75rem;
+  padding: 1.5rem;
   transition: all 0.3s ease;
 }
 
@@ -704,7 +703,7 @@ body {
 }
 
 .bmc-card-title {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--shout-yellow);
   margin-bottom: 1rem;
@@ -721,11 +720,11 @@ body {
 }
 
 .bmc-bullet-item {
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: var(--text-muted-dark);
   padding-left: 1.25rem;
   position: relative;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .bmc-bullet-item::before {
@@ -738,8 +737,8 @@ body {
 
 .charts-two-col {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 2rem;
   margin-bottom: 2rem;
 }
 
@@ -900,35 +899,4 @@ body {
   .charts-two-col {
     grid-template-columns: 1fr;
   }
-  .bmc-grid-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .bmc-grid-container {
-    grid-template-columns: 1fr;
-  }
-  .hero-headline {
-    font-size: 2.8rem;
-  }
-  .input-controls-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #0A0A0A;
-}
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--shout-yellow);
 }
