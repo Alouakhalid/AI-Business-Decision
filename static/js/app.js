@@ -5,12 +5,8 @@ let currentSlideIndex = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
   checkApiHealth();
-  // Auto-populate all 10 strategic dashboard cards immediately on page load
-  const initialReport = generateFallbackReport("B2B AI Strategic Autonomous Swarm Platform", 250000);
-  currentReport = initialReport;
-  renderResults(initialReport);
   const resultsEl = document.getElementById('dashboardResults');
-  if (resultsEl) resultsEl.style.display = 'flex';
+  if (resultsEl) resultsEl.style.display = 'none';
 });
 
 async function checkApiHealth() {
