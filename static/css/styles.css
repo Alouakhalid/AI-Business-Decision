@@ -439,7 +439,7 @@ body {
 }
 
 .results-dashboard {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 4rem;
 }
