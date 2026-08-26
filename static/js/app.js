@@ -351,7 +351,7 @@ function renderNodeGraph(nodes, edges) {
   `;
 
   const width = container.clientWidth || 900;
-  const height = container.clientHeight || 540;
+  const height = container.clientHeight || 800;
 
   const tierMap = { frontend: [], backend: [], data_ai: [] };
   nodes.forEach(n => {
@@ -364,16 +364,16 @@ function renderNodeGraph(nodes, edges) {
   const positions = {};
 
   const layoutTier = (nodeList, columnPct) => {
-    const x = Math.max(120, Math.min(width - 120, width * columnPct));
+    const x = Math.max(140, Math.min(width - 140, width * columnPct));
     const total = nodeList.length;
     nodeList.forEach((n, idx) => {
-      const step = (height - 80) / (total + 1);
-      const y = 40 + step * (idx + 1);
+      const step = (height - 120) / (total + 1);
+      const y = 60 + step * (idx + 1);
       positions[n.id] = { x, y };
     });
   };
 
-  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.20);
+  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.15);
   layoutTier(tierMap.backend.length ? tierMap.backend : [nodes[1] || nodes[0]], 0.50);
   layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.80);
 
