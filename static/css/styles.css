@@ -899,4 +899,35 @@ body {
   .charts-two-col {
     grid-template-columns: 1fr;
   }
+  .bmc-grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .bmc-grid-container {
+    grid-template-columns: 1fr;
+  }
+  .hero-headline {
+    font-size: 2.8rem;
+  }
+  .input-controls-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--shout-yellow);
 }
