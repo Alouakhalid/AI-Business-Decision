@@ -497,14 +497,15 @@ body {
 /* ENHANCED CTO NODE GRAPH STYLES */
 .node-graph-container {
   width: 100%;
-  min-height: 450px;
-  background: radial-gradient(circle at center, rgba(30, 30, 30, 0.8), rgba(10, 10, 10, 0.95));
+  min-height: 540px;
+  background: radial-gradient(circle at center, rgba(30, 30, 30, 0.95), rgba(10, 10, 10, 0.98));
   border-radius: var(--radius-card);
   position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(253, 224, 71, 0.25);
+  overflow: visible;
+  border: 2px solid rgba(253, 224, 71, 0.5);
   margin-bottom: 2rem;
   box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+  padding: 2.5rem;
 }
 
 .tech-node {
@@ -683,8 +684,8 @@ body {
 }
 
 .bmc-grid-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
 
@@ -693,7 +694,7 @@ body {
   backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-card);
-  padding: 1.5rem;
+  padding: 1.75rem;
   transition: all 0.3s ease;
 }
 
@@ -703,7 +704,7 @@ body {
 }
 
 .bmc-card-title {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--shout-yellow);
   margin-bottom: 1rem;
@@ -716,15 +717,15 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .bmc-bullet-item {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: var(--text-muted-dark);
   padding-left: 1.25rem;
   position: relative;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .bmc-bullet-item::before {
@@ -736,10 +737,10 @@ body {
 }
 
 .charts-two-col {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .chart-glass-card {

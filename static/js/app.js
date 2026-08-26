@@ -351,7 +351,7 @@ function renderNodeGraph(nodes, edges) {
   `;
 
   const width = container.clientWidth || 900;
-  const height = container.clientHeight || 450;
+  const height = container.clientHeight || 540;
 
   const tierMap = { frontend: [], backend: [], data_ai: [] };
   nodes.forEach(n => {
@@ -364,22 +364,22 @@ function renderNodeGraph(nodes, edges) {
   const positions = {};
 
   const layoutTier = (nodeList, columnPct) => {
-    const x = width * columnPct;
+    const x = Math.max(120, Math.min(width - 120, width * columnPct));
     const total = nodeList.length;
     nodeList.forEach((n, idx) => {
-      const step = height / (total + 1);
-      const y = step * (idx + 1);
+      const step = (height - 80) / (total + 1);
+      const y = 40 + step * (idx + 1);
       positions[n.id] = { x, y };
     });
   };
 
-  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.18);
+  layoutTier(tierMap.frontend.length ? tierMap.frontend : [nodes[0]], 0.20);
   layoutTier(tierMap.backend.length ? tierMap.backend : [nodes[1] || nodes[0]], 0.50);
-  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.82);
+  layoutTier(tierMap.data_ai.length ? tierMap.data_ai : nodes.slice(2), 0.80);
 
   nodes.forEach((n, i) => {
     if (!positions[n.id]) {
-      positions[n.id] = { x: width * (0.2 + (i * 0.25) % 0.6), y: height * 0.5 };
+      positions[n.id] = { x: Math.max(120, Math.min(width - 120, width * (0.25 + (i * 0.25) % 0.5))), y: height * 0.5 };
     }
   });
 
@@ -405,16 +405,26 @@ function renderNodeGraph(nodes, edges) {
     const s = positions[e.source];
     const t = positions[e.target];
     if (s && t) {
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', s.x); line.setAttribute('y1', s.y);
-      line.setAttribute('x2', t.x); line.setAttribute('y2', t.y);
-      line.setAttribute('class', 'node-svg-line');
-      line.setAttribute('marker-end', 'url(#arrow)');
-      svg.appendChild(line);
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const dx = t.x - s.x;
+      const dy = t.y - s.y;
+      const cx = (s.x + t.x) / 2;
+      const cy = (s.y + t.y) / 2 - Math.min(45, Math.abs(dx) * 0.12);
+      const d = `M ${s.x} ${s.y} Q ${cx} ${cy} ${t.x} ${t.y}`;
+      
+      path.setAttribute('d', d);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'rgba(253, 224, 71, 0.75)');
+      path.setAttribute('stroke-width', '2.5');
+      path.setAttribute('stroke-dasharray', '6,6');
+      path.setAttribute('class', 'node-svg-line');
+      path.setAttribute('marker-end', 'url(#arrow)');
+      svg.appendChild(path);
 
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('x', (s.x + t.x) / 2); text.setAttribute('y', (s.y + t.y) / 2 - 8);
-      text.setAttribute('fill', 'var(--shout-yellow)'); text.setAttribute('font-size', '10px');
+      text.setAttribute('x', cx);
+      text.setAttribute('y', cy - 8);
+      text.setAttribute('fill', '#FDE047'); text.setAttribute('font-size', '10px');
       text.setAttribute('font-weight', 'bold');
       text.setAttribute('text-anchor', 'middle');
       text.textContent = e.label;
